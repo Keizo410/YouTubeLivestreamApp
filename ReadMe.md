@@ -1,4 +1,6 @@
 __TO RUN__
-npm start
+
+>npm start
 
 but, you need .env for backend too
+
