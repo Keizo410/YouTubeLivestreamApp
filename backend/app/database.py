@@ -25,11 +25,45 @@ class Database:
 
     def get_sql_file(self):
         return self.sql_file
+
+    def create_subscription(self, channelID, channelName, channelHolderName):
+        try: 
+            if not channelHolderName:
+                channelHolderName = ["Unknown Name"]  # Default value if no name is provided
+            conn = self.get_db_connection()
+            cur = conn.cursor()
+            cur.execute("""INSERT INTO youtuber (name)
+                            VALUES (%s) ON CONFLICT (name) DO NOTHING
+                            RETURNING id
+                        """, (channelHolderName[0],))  
+            youtuber_id = cur.fetchone()  # Get the inserted youtuber_id 
+            if not youtuber_id:
+                cur.execute("SELECT id FROM youtuber WHERE name = %s", (channelHolderName[0],))
+                youtuber_id = cur.fetchone()[0]
+            cur.execute("""INSERT INTO channel (name, youtuber_id)
+                            VALUES (%s, %s) ON CONFLICT (name) DO NOTHING
+                        """, (channelName, youtuber_id))  # Use the fetched youtuber_id
+            conn.commit()
+            cur.close()
+            conn.close()
+            return True, ""
+        except (Exception, psycopg2.Error) as error:
+            return False, error 
+
+    def read_subscription(self):
+        pass
+
+    def update_subscription(self):
+        pass
+
+    def delete_subscription(self):
+        pass
     
     def initialize_db(self, filepath):
         queries = self.load_sql_query(filepath).split(';')
         queries = [query.strip() for query in queries if query.strip()]
         if queries:
+            print(len(queries))
             success, error = self.execute_query(query=queries, method="init")
             if(success):
                 print("Database and tables created successfully!", file=sys.stderr)
@@ -64,8 +98,16 @@ class Database:
                 aggregated_data = cur.fetchall()
                 cur.execute(query[1])
                 cur.executemany(query[2], aggregated_data)
-            elif(method=="init"):
-                cur.execute(query[0])
+            elif(method=="init" or method=="recreate"):
+                # cur.execute(query[0])
+                for q in query:
+                    try:
+                        # Execute each query, and continue even if it fails
+                        cur.execute(q)
+                    except Exception as e:
+                        # Catch the error for this query but continue
+                        print(f"Error executing query: {q}. Error: {e}", file=sys.stderr)
+                        continue
             elif(method=="csv"):
                 cur.execute(query[1])
                 rows = cur.fetchall()
@@ -82,9 +124,13 @@ class Database:
                             if c.amountValue is None:
                                 c.amountValue = 0
                             cur.execute("""
-                                INSERT INTO livechat_data (datetime, author_name, message, amount_value)
-                                VALUES (%s, %s, %s, %s)
-                            """, (c.datetime, c.author.name, c.message, c.amountValue))
+                                INSERT INTO livestream (donation, comment)
+                                VALUES (%s, %s) 
+                            """, (c.message, c.amountValue))
+                            cur.execute("""
+                                INSERT INTO listener (name)
+                                VALUES (%s) ON CONFLICT (name) DO NOTHING
+                            """, (c.author.name))
                             conn.commit()
                     except KeyboardInterrupt:
                         livechat.terminate()
@@ -92,8 +138,8 @@ class Database:
                     except Exception as e:
                         print(f"Error during live chat processing: {e}", file=sys.stderr)
                         break
-            elif(method=="recreate"):
-                cur.execute(query[0])
+            # elif(method=="recreate"):
+            #     cur.execute(query[0])
             elif(method=="drop"):
                 cur.execute(query[0])
             elif(method=="mock"):

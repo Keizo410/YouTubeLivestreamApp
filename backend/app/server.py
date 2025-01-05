@@ -19,24 +19,24 @@ CORS(app)
 def welcome():
     db.set_sql_file('./db/queries/initialize.sql')
     db.initialize_db(db.get_sql_file())
-    db.set_sql_file('./db/queries/summary.sql')
-    db.summerize_db_data(db.get_sql_file())
+    # db.set_sql_file('./db/queries/summary.sql')
+    # db.summerize_db_data(db.get_sql_file())
     return render_template("home.html")
 
-@app.route('/create', methods=['GET'])
-def create():
-    db.set_sql_file('./db/queries/initialize.sql')
-    return db.recreate_table(db.get_sql_file())
+# @app.route('/create', methods=['GET'])
+# def create():
+#     db.set_sql_file('./db/queries/initialize.sql')
+#     return db.recreate_table(db.get_sql_file())
 
 @app.route('/drop', methods=['GET'])
 def drop():
     db.set_sql_file('./db/queries/drop.sql')
     return db.drop_table(db.get_sql_file())
 
-@app.route('/add', methods=['GET'])
-def add():
-    db.set_sql_file('./db/queries/initialize.sql')
-    return db.add_mock_table(db.get_sql_file())
+# @app.route('/add', methods=['GET'])
+# def add():
+#     db.set_sql_file('./db/queries/initialize.sql')
+#     return db.add_mock_table(db.get_sql_file())
 
 @app.route('/view', methods=['GET'])
 def view():
@@ -93,16 +93,21 @@ def youtube_callback():
     else:
         abort(405)
 
+#API - subscription
+#This is called to subscribe user's favorite channel on YouTube. It stores the channelID, channelName, channelHolderName to the database.
 @app.route('/api/subscriptions', methods=['POST'])
 def subscribe():
     if not request.json or 'youtuber' not in request.json:
         abort(400)
     youtuber = request.json['youtuber']
-    id, status_code = yt.get_channelId(youtuber)
+    id, title, persons, status_code = yt.get_channelId(youtuber)
     status_code = websub.subscribe_to_channel(id)
-
     if(status_code==201):
-        return jsonify({'message': f'{id} subscribed successfully'}), status_code
+        success, _ = db.create_subscription(id, title, persons)
+        if(success):
+            return jsonify({'message': f'id: {id} & title: {title} subscribed successfully'}), status_code
+        else:
+            return jsonify({'message': f'id: {id} & title: {title} subscribed successfully. But, database operation is skipped.'}), status_code
     else:
         return abort(403)
 
