@@ -1,5 +1,5 @@
 
-from youtube import YouTube
+from backend.utilities.youtube import YouTube
 
 
 yt = YouTube()

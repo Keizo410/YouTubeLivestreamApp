@@ -2,8 +2,8 @@
     "name": "my-app",
     "version": "1.0.0",
     "scripts": {
-      "start": "npm run start:docker-backend && npm run start:frontend",
-      "start:frontend": "cd frontend && npm install && npm start",
+      "start": "concurrently \"npm run start:frontend\" \"npm run start:docker-backend\"",
+      "start:frontend": "cd frontend && echo 'Installing dependencies...' && npm install && echo 'Starting frontend...' && npx expo start --web",
       "start:docker-backend": "docker-compose -f backend/docker-compose.yml up --build",
       "build": "cd frontend && npm run build",
       "test": "cd frontend && npm run test"

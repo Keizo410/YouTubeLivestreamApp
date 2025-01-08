@@ -1,2 +1,15 @@
 youtube comments:
 https://www.geeksforgeeks.org/how-to-extract-youtube-comments-using-youtube-api-python/
+
+
+1. Subscription service
+- get channelID, channelName, youtuber name from user input
+- store it for livestream tracking in the backend database tables
+
+2. About section
+
+3. Analysis section
+- Analysis of each registered youtube channels livestreaming info
+- the amount of money they earned at specific session
+- user list of superchat and comment
+- comment analysis of the session (negative? positive?)

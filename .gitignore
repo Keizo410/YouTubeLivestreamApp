@@ -45,3 +45,6 @@ app-example
 #Backend
 .env
 *.csv
+
+__pycache__/
+.pytest_cache/

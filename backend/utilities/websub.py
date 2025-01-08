@@ -26,6 +26,7 @@ class WebSub:
             'hub.topic': topic_url,
             'hub.callback': callback_url,
         }
+        
         response = requests.post(hub_url, data=data)
         if response.status_code == 202:
             print('Subscribed successfully!')
