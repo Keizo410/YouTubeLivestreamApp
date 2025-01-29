@@ -24,8 +24,8 @@ This project is a Dockerized Flask-based web application for tracking YouTube li
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-repo/superchat-tracker.git
-cd superchat-tracker
+git clone repo-url
+cd YoutubeLivestreamApp
 ```
 
 ### 2. Set up an environment variable
@@ -69,13 +69,7 @@ Once the containers are running, you can access the Flask application at: __http
 
 #At this moment, It is all get requests.
 
-- **GET `/`**: Initialize the database and summarize data.
-- **POST `/create`**: Create the necessary database tables.
-- **DELETE `/drop`**: Drop the existing database tables.
-- **POST `/add`**: Insert sample data into the database.
-- **GET `/view`**: View the contents of the `livechat_data` and `author_total` tables.
-- **POST `/send_mail`**: Send an email with the CSV file attached.
-- **POST `/youtube-callback`**: Handle YouTube PubSubHubbub notifications for live chat tracking.
+- currently, under review. 
 
 ### CSV Export
 
@@ -109,16 +103,6 @@ To run the application locally without Docker, ensure you have Python and Postgr
 
 The database is initialized using SQL scripts located in the `./db/queries/` directory. The primary tables include:
 
-- **`livechat_data`**: Stores live chat messages with author names and superchat amounts.
-- **`author_total`**: Stores the aggregated superchat amounts for each author.
+- currently under review.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Flask
-- PostgreSQL
-- pytchat (YouTube Live Chat Library)
-- Docker
