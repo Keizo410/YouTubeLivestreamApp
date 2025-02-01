@@ -35,8 +35,14 @@ INSERT INTO channel (name, youtuber_id) VALUES
 ('Channel 1', 1) on conflict (name, youtuber_id) do nothing;
 
 INSERT INTO listener (name) VALUES ('Listener X') on CONFLICT (name) do nothing;
+INSERT INTO listener (name) VALUES ('Listener Y') on CONFLICT (name) do nothing;
+INSERT INTO listener (name) VALUES ('Listener Z') on CONFLICT (name) do nothing;
 
 INSERT INTO livestream (currentTime, date, channel_id, listener_id, donation, comment) VALUES
 ('14:30:00', '2025-01-01', 1, 1, 50.0, 'Great stream!') on CONFLICT (currentTime, donation, comment) do nothing;
+INSERT INTO livestream (channel_id, listener_id, donation, comment) VALUES
+(1, 1, 5.0, 'Awesome!');
+INSERT INTO livestream (channel_id, listener_id, donation, comment) VALUES
+(1, 1, 200.0, 'Great stream!');
 
 

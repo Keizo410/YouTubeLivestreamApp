@@ -46,14 +46,22 @@ class Database:
         )
     
     def youtuberTableAdapter(self, queryResult):
-        return [{"id": row[0], "name": row[1]} for row in queryResult]
-
+        return [{"id": row[0], 
+                 "name": row[1]} for row in queryResult]
     
     def channelTableAdapter(self, queryResult):
-        return [{"id": row[0], "name": row[1], "youtuber_id": row[2]} for row in queryResult]
+        return [{"id": row[0], 
+                 "name": row[1]} for row in queryResult]
     
     def livestreamTableAdapter(self, queryResult):
-        return [{"id": row[0], "current time": row[1], "date": row[2], "channel_id": row[3], "listener_id": row[4], "donation": row[5], "comment": row[6]} for row in queryResult]
+        print(queryResult)
+        return [{"id": row[0], 
+                 "currentTime": row[1].strftime("%H:%M:%S") if row[1] else None,
+                 "date": row[2].strftime("%Y-%m-%d"), 
+                 "channel_id": row[3], 
+                 "listener_id": row[4], 
+                 "donation": row[5], 
+                 "comment": row[6]} for row in queryResult]
     
     def create_tables(self, filepath):
         queries = self.get_queries(filepath=filepath)
@@ -161,11 +169,11 @@ class Database:
         except (Exception, psycopg2.Error) as error:
             return f"Error while fetching data: {error}", 500
         
-    def execute_single_query(self, query, params=()):
+    def execute_single_query(self, query):
         try:
             conn = self.get_db_connection()
             cur = conn.cursor()
-            cur.execute(query, params)
+            cur.execute(query)
             conn.commit()
             cur.close()
             conn.close()
@@ -221,9 +229,6 @@ class Database:
             return True, ""
         except (Exception, psycopg2.Error) as error:
             return False, error 
-
-
-
     
     def execute_query(self, query="", method="", csv_filepath=""):
         try:
@@ -288,15 +293,29 @@ class Database:
             print("SQL execusion during live streaming was unsuccessfull: ", {error})
 
     def drop_table(self, filepath):
-        queries = self.get_queries(filepath=filepath)
-        if queries:
-            success, error = self.execute_query(query=queries, method="drop")
-            if(success):
-                return "Table dropped successfully!", 200
-            else:
-                return f"Error while dropping table: {error}", 500
-        else:   
-            return "No queries found in the file.", 400
+     # Define the DROP TABLE query directly
+        drop_query = "DROP TABLE IF EXISTS livestream, channel, listener, youtuber CASCADE;"
+        
+        try:
+            # Establish database connection
+            conn = self.get_db_connection()
+            
+            # Execute the drop query
+            cur = conn.cursor()
+            cur.execute(drop_query)
+            
+            # Commit the transaction
+            conn.commit()
+            
+            # Close the cursor and connection
+            cur.close()
+            conn.close()
+            
+            return True, 200  # Success response
+        except Exception as e:
+            # Handle any errors and rollback
+            print(f"Error while dropping tables: {e}")
+            return False, 400  # Failure response
        
     # def recreate_table(self, filepath):
     #     queries = self.load_sql_query(filepath).split(';')

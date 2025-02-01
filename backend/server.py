@@ -20,8 +20,12 @@ CORS(app)
 
 @app.route('/drop', methods=['GET'])
 def drop():
-    db.set_sql_file('/db/queries/drop.sql')
-    return db.drop_table(db.get_sql_file())
+    db.set_sql_file('db/queries/drop.sql')
+    success, response = db.drop_table(db.get_sql_file())
+    if(response == 200):
+        return "Dropped"
+    else:
+        return "Error!"
 
 @app.route('/view', methods=['GET'])
 def view():
@@ -119,9 +123,9 @@ def view_youtubers():
 #return list of channels
 @app.route('/api/subscriptions/channels', methods=['GET'])
 def view_channels():
-    success, _ = db.read_channel()
+    success, result = db.read_channel()
     if(success):
-        return "", 200
+        return jsonify(result), 200
     return abort(400)
 
 #return list of listeners of the channels
@@ -135,7 +139,11 @@ def view_channel_listners():
 #return list of livestreams
 @app.route('/api/livestreams', methods=['GET'])
 def view_livestreams():
-    pass
+    success, result = db.read_livestream()
+    print(result)
+    if(success):
+        return jsonify(result),200
+    return abort(400)
 
 #return list of listeners of the livestrems
 @app.route('/api/livestreams/listeners', methods=['POST'])
@@ -153,4 +161,4 @@ yt = YouTube()
 
 if __name__ == '__main__':
     freeze_support()
-    app.run(host='0.0.0.0', port=int(os.getenv("FLASK_RUN_PORT", 8000)))
+    app.run(debug=True, host='0.0.0.0', port=int(os.getenv("FLASK_RUN_PORT", 8000)))
