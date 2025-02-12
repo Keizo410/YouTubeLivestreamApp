@@ -2,10 +2,11 @@ FROM python:3.8-slim-bullseye
 
 WORKDIR /app
 
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
 # Copy application files
 COPY . /app
-
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "server.py"]

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS listener (
 
 CREATE TABLE IF NOT EXISTS youtuber (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) unique
+    name VARCHAR(255) unique not null
 );
 
 CREATE TABLE IF NOT EXISTS channel (
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS livestream (
     constraint unique_livestream unique (currentTime, donation, comment)
 );
 
-INSERT INTO youtuber (name) VALUES ('Youtuber A') on CONFLICT (name) do nothing;
+INSERT INTO youtuber (name) VALUES ('Unknown') on CONFLICT (name) do nothing;
 
 INSERT INTO channel (name, youtuber_id) VALUES 
 ('Channel 1', 1) on conflict (name, youtuber_id) do nothing;

@@ -32,7 +32,7 @@ export default function Ranking() {
           tableHead = ["ID", "Name"];
         } else if (userView === "channels") {
           tableData = await fetchChannels();
-          tableHead = ["ID", "Channel Name"];
+          tableHead = ["ID", "Channel Name", "Youtuber"];
         } else if (userView === "livestreams") {
           tableData = await fetchLivestreams();
           tableHead = [

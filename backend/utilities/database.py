@@ -51,7 +51,8 @@ class Database:
     
     def channelTableAdapter(self, queryResult):
         return [{"id": row[0], 
-                 "name": row[1]} for row in queryResult]
+                 "name": row[1],
+                 "youtuber": row[2]} for row in queryResult]
     
     def livestreamTableAdapter(self, queryResult):
         print(queryResult)
@@ -76,18 +77,23 @@ class Database:
 
     def create_subscription(self, channelID, channelName, channelHolderName):
         try: 
-            if not channelHolderName:
-                channelHolderName = ["Unknown Name"]  # Default value if no name is provided
             conn = self.get_db_connection()
             cur = conn.cursor()
-            cur.execute("""INSERT INTO youtuber (name)
-                            VALUES (%s) ON CONFLICT (name) DO NOTHING
-                            RETURNING id
-                        """, (channelHolderName[0],))  
-            youtuber_id = cur.fetchone()  # Get the inserted youtuber_id 
+            youtuber_id=None
+
+            if not channelHolderName:
+                channelHolderName = ["Unknown"]  # Default value if no name is provided
+            else:
+                cur.execute("""INSERT INTO youtuber (name)
+                                VALUES (%s) ON CONFLICT (name) DO NOTHING
+                                RETURNING id
+                            """, (channelHolderName[0],))  
+                youtuber_id = cur.fetchone()  
+
             if not youtuber_id:
                 cur.execute("SELECT id FROM youtuber WHERE name = %s", (channelHolderName[0],))
                 youtuber_id = cur.fetchone()[0]
+
             cur.execute("""INSERT INTO channel (name, youtuber_id)
                             VALUES (%s, %s) ON CONFLICT (name) DO NOTHING
                         """, (channelName, youtuber_id))  # Use the fetched youtuber_id
@@ -97,6 +103,7 @@ class Database:
             return True, ""
         except (Exception, psycopg2.Error) as error:
             return False, error 
+
 
     def update_subscription(self):
         pass
@@ -123,7 +130,8 @@ class Database:
         try: 
             conn = self.get_db_connection()
             cur = conn.cursor()
-            cur.execute("""select * from channel""")
+            cur.execute("""select channel.id, channel.name, youtuber.name from channel 
+                        left join youtuber on channel.youtuber_id = youtuber.id""")
             table = cur.fetchall()  # Fetch all rows
             result = self.channelTableAdapter(table)            
             cur.close()
