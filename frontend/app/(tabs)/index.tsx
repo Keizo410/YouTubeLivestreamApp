@@ -1,44 +1,59 @@
-import { Text, View, StyleSheet, TextInput, Button } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  Button,
+  ActivityIndicator,
+} from "react-native";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
+import { subscribeToYoutubers } from "@/utils/api";
+import React from "react";
 
 export default function Index() {
-  const [text, onChangeText] = useState("Paste your favorite YouTuber Handle (@...)");
-  
-  const subscribeToYoutuber = async (youtuber: string) => {
-    try{
-      const response = await fetch(`http://localhost:8000/api/subscriptions`
-        ,{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({youtuber:youtuber})
-      })
-      const data = await response.json();
-      if(response.status==201){
+  const [text, onChangeText] = useState(
+    "Paste your favorite YouTuber Handle (@...)"
+  );
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscription = async (youtuber: string) => {
+    setLoading(true);
+
+    try {
+      const [response, data] = await subscribeToYoutubers(youtuber);
+      if (response.status === 201) {
         router.push({
           pathname: "/success",
-          params: {id: data.message}
+          params: { id: data.message },
         });
-      }else{
-        router.push("/failedSubscription")
+      } else {
+        router.push("/failedSubscription");
       }
-    }catch (error){
+    } catch (error) {
       console.log("Error:", error);
-      router.push("/failedSubscription")
+      router.push("/failedSubscription");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Welcome to YouTube LiveStream Tracker</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
-        value={text}
-      />
-      <Button title="Request" onPress={() => subscribeToYoutuber(text)}/>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <>
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeText}
+            value={text}
+            placeholder="Enter YouTuber name"
+          />
+          <Button title="Request" onPress={() => handleSubscription(text)} />
+        </>
+      )}
     </View>
   );
 }

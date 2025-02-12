@@ -3,13 +3,13 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function Success() {
-  const {id}= useLocalSearchParams()
+  const { id } = useLocalSearchParams();
   return (
     <>
       <Stack.Screen options={{ title: "SUCCESS" }} />
       <View style={styles.container}>
         <Text style={styles.text}>You have successfully subscribed!</Text>
-        {id && <Text style={styles.text}>{id}</Text>}  {/* Display the ID */}
+        {id && <Text style={styles.text}>{id}</Text>}
         <Link href="/" style={styles.button}>
           Go back to Home screen!
         </Link>
@@ -21,9 +21,9 @@ export default function Success() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#25292e",
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
     color: "#fff",
