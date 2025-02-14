@@ -1,8 +1,24 @@
 import { Text, View, StyleSheet, Dimensions, Image } from "react-native";
 const { width } = Dimensions.get("window");
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
+import { fetchChannelNum } from "@/utils/api";
 
 export default function AboutScreen() {
+  const [channelNum, setChannelNum] = useState("+5");
+
+  useEffect(()=>{
+    const fetchData = async() => {
+      try{
+        let data = await fetchChannelNum();
+        setChannelNum(data);
+      }catch(err){
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [channelNum]);
+  
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -11,7 +27,7 @@ export default function AboutScreen() {
       >
           <View style={styles.sectionCardContainer}>
             <View style={styles.cardContainer}>
-              <Text style={styles.cardText}>+5</Text>
+              <Text style={styles.cardText}>+{channelNum}</Text>
             </View>
             <Text
               numberOfLines={1}
@@ -123,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.009,
     fontWeight: "500",
     flex: 1,
-    textAlign: "left",
+    textAlign: "center",
     width: width * 0.2,
   },
   cardText: {

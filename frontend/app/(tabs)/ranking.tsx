@@ -6,11 +6,12 @@ import {
   Button,
   ActivityIndicator,
   Dimensions,
+  TouchableOpacity
 } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { fetchChannels, fetchLivestreams, fetchYoutubers } from "@/utils/api";
 import { LinearGradient } from "expo-linear-gradient";
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export default function Ranking() {
   const [userView, setUserView] = useState("youtubers");
@@ -67,21 +68,15 @@ export default function Ranking() {
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        <Button
-          title="Youtubers"
-          onPress={() => toggleButton("youtubers")}
-          color="#5fa8d3"
-        />
-        <Button
-          title="Channels"
-          onPress={() => toggleButton("channels")}
-          color="#5fa8d3"
-        />
-        <Button
-          title="LiveStreams"
-          onPress={() => toggleButton("livestreams")}
-          color="#5fa8d3"
-        />
+        <TouchableOpacity style={userView==="youtubers" ? styles.selectedButton : styles.button} onPress={()=>toggleButton("youtubers")}>
+          <Text style={styles.buttonText}>YouTubers</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={userView==="channels" ? styles.selectedButton : styles.button} onPress={()=>toggleButton("channels")}>
+          <Text style={styles.buttonText}>Channels</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={userView==="livestreams" ? styles.selectedButton : styles.button} onPress={()=>toggleButton("livestreams")}>
+          <Text style={styles.buttonText}>LiveStreams</Text>
+        </TouchableOpacity>
       </View>
       {/* <View style={styles.container}>
         <Text style={styles.text}>Ranking</Text>
@@ -146,5 +141,26 @@ const styles = StyleSheet.create({
     fontSize: width * 0.01,
     fontWeight: "bold",
     textAlign:"center"
+  },
+  button:{
+    backgroundColor: "#5fa8d3",
+    width: width*0.07,
+    height: height * 0.05,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  buttonText: {
+    color: "white",
+    fontSize: width * 0.01,
+    fontWeight: "bold",
+  },
+  selectedButton: {
+    backgroundColor: "#3b82a0",
+    width: width*0.07,
+    height: height * 0.05,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
