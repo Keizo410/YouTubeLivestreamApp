@@ -5,9 +5,12 @@ import {
   StyleSheet,
   Button,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { fetchChannels, fetchLivestreams, fetchYoutubers } from "@/utils/api";
+import { LinearGradient } from "expo-linear-gradient";
+const { width } = Dimensions.get("window");
 
 export default function Ranking() {
   const [userView, setUserView] = useState("youtubers");
@@ -62,86 +65,86 @@ export default function Ranking() {
   };
 
   return (
-    <>
+    <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <Button
           title="Youtubers"
           onPress={() => toggleButton("youtubers")}
-          color="green"
+          color="#5fa8d3"
         />
         <Button
           title="Channels"
           onPress={() => toggleButton("channels")}
-          color="green"
+          color="#5fa8d3"
         />
         <Button
           title="LiveStreams"
           onPress={() => toggleButton("livestreams")}
-          color="green"
+          color="#5fa8d3"
         />
       </View>
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <Text style={styles.text}>Ranking</Text>
-        <Text style={styles.text}>{userView}</Text>;
-      </View>
+        <Text style={styles.text}>{userView}</Text>
+      </View> */}
       <View style={styles.tableContainer}>
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : error ? (
-          <Text style={styles.text}>{error}</Text>
+          <Text style={styles.headText}>{error}</Text>
         ) : (
-          <Table
-            borderStyle={{ borderWidth: 4, borderColor: "teal" }}
-            style={styles.table}
-          >
+          <Table borderStyle={styles.tableStyle} style={styles.table}>
             <Row
               data={data.tableHead}
               style={styles.head}
-              textStyle={styles.text}
+              textStyle={styles.headText}
             />
-            <Rows data={data.tableData} textStyle={styles.text} />
+            <Rows data={data.tableData} textStyle={styles.dataText} />
           </Table>
         )}
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#25292e",
     alignItems: "center",
-    justifyContent: "center",
+    display: "flex",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "white"
   },
   buttonContainer: {
-    backgroundColor: "#25292e",
+    flex: 1,
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",
     padding: "1%",
   },
   tableContainer: {
     flex: 9,
-    backgroundColor: "#25292e",
-    paddingHorizontal: "30%",
+    width: "70%",
+  },
+  tableStyle: {
+    borderWidth: 3,
+    borderColor: "#5fa8d3",
   },
   head: {
     height: 40,
-    backgroundColor: "darkblue",
   },
   table: {
-    width: "100%",
   },
-  text: {
-    color: "#fff",
+  headText: {
+    color: "black",
+    fontSize: width * 0.012,
+    fontWeight: "bold",
+    textAlign:"center"
   },
-  input: {
-    height: 40,
-    width: "30%",
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    color: "white",
-    borderColor: "#fff",
-  },
+  dataText:{
+    color: "black",
+    fontSize: width * 0.01,
+    fontWeight: "bold",
+    textAlign:"center"
+  }
 });

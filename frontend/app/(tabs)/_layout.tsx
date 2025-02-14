@@ -6,14 +6,19 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#ffd33d",
+        tabBarActiveTintColor: "#5fa8d3",
+        // tabBarActiveTintColor: "#ffd33d",
         headerStyle: {
-          backgroundColor: "#25292e",
+          // backgroundColor: "#25292e",
         },
         headerShadowVisible: false,
-        headerTintColor: "#fff",
+        // headerTintColor: "#fff",
         tabBarStyle: {
-          backgroundColor: "#25292e",
+          // backgroundColor: "#25292e",
+        },
+        tabBarLabelStyle: {
+          fontSize: 15,  // Adjust the size as needed
+          fontWeight: "bold", 
         },
       }}
     >
@@ -25,8 +30,9 @@ export default function TabLayout() {
             <Ionicons
               name={focused ? "home-sharp" : "home-outline"}
               color={color}
-              size={24}
+              size={25}
             />
+            
           ),
         }}
       />
@@ -40,7 +46,7 @@ export default function TabLayout() {
                 focused ? "information-circle" : "information-circle-outline"
               }
               color={color}
-              size={24}
+              size={25}
             />
           ),
         }}
@@ -50,7 +56,7 @@ export default function TabLayout() {
         options={{
           title: "Ranking",
           tabBarIcon: ({ color, focused }) => (
-            <FontAwesome6 name="ranking-star" size={24} color={color} />
+            <FontAwesome6 name="ranking-star" size={25} color={color} />
           ),
         }}
       />

@@ -5,11 +5,14 @@ import {
   TextInput,
   Button,
   ActivityIndicator,
+  Dimensions
 } from "react-native";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { subscribeToYoutubers } from "@/utils/api";
 import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
+const { width } = Dimensions.get("window");
 
 export default function Index() {
   const [text, onChangeText] = useState(
@@ -39,7 +42,8 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+            colors={["#5fa8d3", "#a0d8ef", "#ffffff"]} style={styles.container}>
       <Text style={styles.text}>Welcome to YouTube LiveStream Tracker</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
@@ -51,27 +55,30 @@ export default function Index() {
             value={text}
             placeholder="Enter YouTuber name"
           />
-          <Button title="Request" onPress={() => handleSubscription(text)} />
+          <Button color="#5fa8d3" title="Request" onPress={() => handleSubscription(text)} />
         </>
       )}
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#25292e",
+    // backgroundColor: "#25292e",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
   text: {
-    color: "#fff",
+    color: "black",
+    fontSize: width * 0.016,
+    fontWeight: "bold",
   },
   button: {
     fontSize: 20,
     textDecorationLine: "underline",
-    color: "#fff",
+    // color: "#fff",
   },
   input: {
     height: 40,
@@ -79,7 +86,8 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    color: "white",
-    borderColor: "#fff",
+    color: "black",
+    fontSize: width * 0.01,
+    fontWeight: "500",
   },
 });
