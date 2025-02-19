@@ -33,7 +33,9 @@ class YouTube:
         }
         for entry in root.findall('ns0:entry', namespaces):
             videoId = entry.find('ns1:videoId', namespaces).text
-            return videoId
+            channel_id = entry.find('ns0:author/ns0:name', namespaces).text  
+            
+        return videoId, channel_id
 
     def get_channelHolderName(self, text):
         nltk.download('punkt_tab')

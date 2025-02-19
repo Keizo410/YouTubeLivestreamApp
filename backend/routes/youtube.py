@@ -26,15 +26,19 @@ def youtube_callback():
         content_type = request.headers.get('Content-Type')
         if content_type == 'application/atom+xml':
             root = ET.fromstring(request.data)
-            vd.value = yt.get_videoId(root)
-            if yt.is_livestream(str(vd.value)):
-                p = Process(target=db.process_livechat, args=(vd,))
+            video_id, channel_id = yt.get_videoId(root)
+
+            if video_id is not None and yt.is_livestream(str(video_id)):
+                vd = manager.Value(str, video_id)  # Store video ID
+                ch_id = manager.Value(str, channel_id)  # Store channel ID
+                
+                p = Process(target=db.process_livechat, args=(vd, ch_id))
                 p.start()
                 p.join(timeout=60 * 60)
                 if p.is_alive():
                     p.terminate()
-                db.set_sql_file('db/queries/summary.sql')
-                db.summerize_db_data(db.get_sql_file())
+                # db.set_sql_file('db/queries/summary.sql')
+                # db.summerize_db_data(db.get_sql_file())
             return '', 204
         else:
             abort(415)

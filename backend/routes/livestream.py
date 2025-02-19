@@ -9,7 +9,6 @@ def view_livestreams():
     success, result = db.read_livestream()
     return jsonify(result), 200 if success else abort(400)
 
-
 #return list of listeners of the livestrems
 @livestreams_bp.route('/api/livestreams/listeners', methods=['POST'])
 def view_livestream_listeners():

@@ -16,12 +16,19 @@ class Database:
         self.data = ""
         self.query = ""
         self.videoId = ""
+        self.channelId = ""
 
     def set_videoId(self, videoId):
         self.videoId = videoId
 
     def get_videoId(self):
         return self.videoId
+    
+    def set_channelId(self, channelId):
+        self.channelId = channelId
+
+    def get_channelId(self):
+        return self.channelId
 
     def set_sql_file(self, filepath):
         self.sql_file = filepath
@@ -94,9 +101,9 @@ class Database:
                 cur.execute("SELECT id FROM youtuber WHERE name = %s", (channelHolderName[0],))
                 youtuber_id = cur.fetchone()[0]
 
-            cur.execute("""INSERT INTO channel (name, youtuber_id)
-                            VALUES (%s, %s) ON CONFLICT (name) DO NOTHING
-                        """, (channelName, youtuber_id))  # Use the fetched youtuber_id
+            cur.execute("""INSERT INTO channel (name, channelId, youtuber_id)
+                            VALUES (%s, %s, %s) ON CONFLICT (name) DO NOTHING
+                        """, (channelName, channelID, youtuber_id))  # Use the fetched youtuber_id
             conn.commit()
             cur.close()
             conn.close()
@@ -208,22 +215,37 @@ class Database:
         try:
             conn = self.get_db_connection()
             cur = conn.cursor()
-
-            livechat = pytchat.create(video_id=self.get_videoId())
+            video_id=self.get_videoId()
+            livechat = pytchat.create(video_id)
+            channelName = self.get_channelId()
             while livechat.is_alive():
                 try:
+                    cur.execute("""select id from channel where name = %s""",(channelName,))
+                    result = cur.fetchone()
+        
+                    if result is None:
+                        print(f"Error: No channel found for channelId {channelName}")
+                        break 
+
+                    channel_id = result[0]
+
                     for c in livechat.get().sync_items():
-                        if c.amountValue is None:
-                            c.amountValue = 0
+                        c.amountValue = getattr(c, "amountValue", 0) or 0
+                        c.message = c.message or ""
+                        author_name = c.author.name if c.author else "Unknown"
+
+                        cur.execute("""INSERT INTO listener (name) VALUES (%s) ON CONFLICT (name) DO NOTHING""", (author_name,))
+                        cur.execute("""SELECT id FROM listener WHERE name = %s""", (author_name,))
+                        listener_data = cur.fetchone()
+                        
+                        listener_id = listener_data[0] if listener_data else 1  
+
                         cur.execute("""
-                            INSERT INTO livestream (donation, comment)
-                            VALUES (%s, %s) 
-                        """, (c.message, c.amountValue))
-                        cur.execute("""
-                            INSERT INTO listener (name)
-                            VALUES (%s) ON CONFLICT (name) DO NOTHING
-                        """, (c.author.name))
-                        conn.commit()
+                            INSERT INTO livestream (channel_id, listener_id, donation, comment)
+                            VALUES (%s, %s, %s, %s) 
+                        """, (channel_id, listener_id, c.amountValue, c.message))
+
+                    conn.commit()
                 except KeyboardInterrupt:
                     livechat.terminate()
                     break
@@ -231,7 +253,6 @@ class Database:
                     print(f"Error during live chat processing: {e}", file=sys.stderr)
                     break
 
-            conn.commit()
             cur.close()
             conn.close()
             return True, ""
@@ -291,9 +312,10 @@ class Database:
             print(f"Error while writing data to CSV: {error}", file=sys.stderr)
             return None
         
-    def process_livechat(self, vd):
+    def process_livechat(self, vd, ch):
         print("Tracking Started...")
         self.set_videoId(str(vd.value))
+        self.set_channelId(str(ch.value))
         success, error = self.exucture_livestream_query()
         if(success):
             print("Tracking Finished...", file=sys.stderr)

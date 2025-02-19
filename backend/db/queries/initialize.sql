@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS listener (
     name VARCHAR(255) unique
 );
 
-
 CREATE TABLE IF NOT EXISTS youtuber (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) unique not null
@@ -14,6 +13,7 @@ CREATE TABLE IF NOT EXISTS youtuber (
 CREATE TABLE IF NOT EXISTS channel (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) not null unique,
+    channelId VARCHAR(255) not null unique,
     youtuber_id INTEGER REFERENCES youtuber(id) on delete CASCADE,
     CONSTRAINT unique_channel UNIQUE (name, youtuber_id)
 );
@@ -31,12 +31,10 @@ CREATE TABLE IF NOT EXISTS livestream (
 
 INSERT INTO youtuber (name) VALUES ('Unknown') on CONFLICT (name) do nothing;
 
-INSERT INTO channel (name, youtuber_id) VALUES 
-('Channel 1', 1) on conflict (name, youtuber_id) do nothing;
+INSERT INTO channel (name, channelId, youtuber_id) VALUES 
+('Channel 1', '1', 1) on conflict (name, youtuber_id) do nothing;
 
-INSERT INTO listener (name) VALUES ('Listener X') on CONFLICT (name) do nothing;
-INSERT INTO listener (name) VALUES ('Listener Y') on CONFLICT (name) do nothing;
-INSERT INTO listener (name) VALUES ('Listener Z') on CONFLICT (name) do nothing;
+INSERT INTO listener (name) VALUES ('Unknown') on CONFLICT (name) do nothing;
 
 INSERT INTO livestream (currentTime, date, channel_id, listener_id, donation, comment) VALUES
 ('14:30:00', '2025-01-01', 1, 1, 50.0, 'Great stream!') on CONFLICT (currentTime, donation, comment) do nothing;
