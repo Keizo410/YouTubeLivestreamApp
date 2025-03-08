@@ -6,8 +6,8 @@ from flask_cors import CORS
 import sys 
 
 from routes.channels import channels_bp
-from routes.email import emails_bp
-from routes.livestream import livestreams_bp
+from routes.emails import emails_bp
+from routes.livestreams import livestreams_bp
 from routes.subscriptions import subscriptions_bp
 from routes.view import views_bp
 from routes.youtube import youtube_bp

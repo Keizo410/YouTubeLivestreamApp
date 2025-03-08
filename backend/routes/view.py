@@ -5,7 +5,7 @@ from utilities.database import Database
 views_bp = Blueprint('views', __name__)
 db = Database()
 
-@views_bp.route('/drop', methods=['GET'])
+@views_bp.route('/drop', methods=['DELETE'])
 def drop():
     db.set_sql_file('db/queries/drop.sql')
     success, response = db.drop_table(db.get_sql_file())

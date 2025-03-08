@@ -6,9 +6,19 @@ import numpy
 
 class YouTube:
     def __init__(self):
+        """Initilize a YouTube object"""
         pass
 
     def is_livestream(self, video_id):
+        """
+        A method to check if a specific video_id is livestream video.
+
+        Parameters:
+        video_id - a string for YouTube video id
+
+        Returns:
+        boolean - True or False
+        """
         API_KEY = os.getenv('API_KEY')
         YOUTUBE_API_URL = os.getenv('API_URL')
         params = {
@@ -27,6 +37,16 @@ class YouTube:
     
     
     def get_videoId(self, root):
+        """
+        A method to find a specific video_id out of root text.
+
+        Parameters:
+        root - a string that contains video_id.
+
+        Returns:
+        videoId - A string for YouTube video id.
+        channel_id - A string for YouTube channel id. 
+        """
         namespaces = {
             'ns0': 'http://www.w3.org/2005/Atom',
             'ns1': 'http://www.youtube.com/xml/schemas/2015'
@@ -38,6 +58,15 @@ class YouTube:
         return videoId, channel_id
 
     def get_channelHolderName(self, text):
+        """
+        A method to get a channel holder name out of input.
+
+        Parameters:
+        text - a string that contains channel description.
+
+        Returns:
+        person_list - a list of human name appeared in the description.
+        """
         nltk.download('punkt_tab')
         nltk.download('averaged_perceptron_tagger_eng')
         nltk.download('maxent_ne_chunker_tab')
@@ -50,17 +79,37 @@ class YouTube:
         name = ""
         for subtree in sentt.subtrees(filter=lambda t: t.label() == 'PERSON'):
             for leaf in subtree.leaves():
-                person.append(leaf[0])
-            if len(person) > 1: #avoid grabbing lone surnames
-                for part in person:
-                    name += part + ' '
-                if name[:-1] not in person_list:
-                    person_list.append(name[:-1])
-                name = ''
-            person = []
+                person.append(leaf[0])  # Collect parts of the name
+            if len(person) > 1:  # If it's a full name (not just a single part)
+                full_name = ' '.join(person)  # Join first and last names
+                if full_name not in person_list:  # Avoid duplicates
+                    person_list.append(full_name)
+                person = []  # Reset for the next name
+        # for subtree in sentt.subtrees(filter=lambda t: t.label() == 'PERSON'):
+        #     for leaf in subtree.leaves():
+        #         person.append(leaf[0])
+        #     if len(person) > 1: 
+        #         for part in person:
+        #             name += part + ' '
+        #         if name[:-1] not in person_list:
+        #             person_list.append(name[:-1])
+        #         name = ''
+        #     person = []
         return person_list
 
     def get_channelId(self, handle_name):
+        """
+        A method to get a channel id by search with handle name.
+
+        Parameters:
+        handle_name - a string that contains YouTube handle (@....).
+
+        Returns:
+        id - a string for channel id 
+        title - a string for channel name
+        persons - a list of channel holder names
+        search_response.status_code - int value for status code of search feature
+        """
         API_KEY = os.getenv('API_KEY')
         if not API_KEY:
             raise ValueError("API_KEY is not set in environment variables.")

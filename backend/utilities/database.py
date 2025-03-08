@@ -5,7 +5,6 @@ import csv
 import os
 import pytchat 
 from dotenv import load_dotenv
-import json 
 
 
 load_dotenv()
@@ -52,15 +51,18 @@ class Database:
             port=os.getenv("PORT")
         )
     
+    #test
     def youtuberTableAdapter(self, queryResult):
         return [{"id": row[0], 
                  "name": row[1]} for row in queryResult]
     
+    #test
     def channelTableAdapter(self, queryResult):
         return [{"id": row[0], 
                  "name": row[1],
                  "youtuber": row[2]} for row in queryResult]
     
+    #test
     def livestreamTableAdapter(self, queryResult):
         print(queryResult)
         return [{"id": row[0], 
@@ -71,6 +73,7 @@ class Database:
                  "donation": row[5], 
                  "comment": row[6]} for row in queryResult]
     
+    #test
     def create_tables(self, filepath):
         queries = self.get_queries(filepath=filepath)
         if queries:
@@ -81,7 +84,9 @@ class Database:
                 print(f"Error while creating database: {error}", file=sys.stderr)
         else:
             print("No queries found in the file.", file=sys.stderr)
+    
 
+    #test
     def create_subscription(self, channelID, channelName, channelHolderName):
         try: 
             conn = self.get_db_connection()
@@ -117,6 +122,7 @@ class Database:
 
     def delete_subscription(self):
         pass
+    
 
     #return table of youtubers associated with 0..n channels
     def read_youtuber(self):
@@ -184,17 +190,17 @@ class Database:
         except (Exception, psycopg2.Error) as error:
             return f"Error while fetching data: {error}", 500
         
-    def execute_single_query(self, query):
-        try:
-            conn = self.get_db_connection()
-            cur = conn.cursor()
-            cur.execute(query)
-            conn.commit()
-            cur.close()
-            conn.close()
-            return True, ""
-        except (Exception, psycopg2.Error) as error:
-            return False, error 
+    # def execute_single_query(self, query):
+    #     try:
+    #         conn = self.get_db_connection()
+    #         cur = conn.cursor()
+    #         cur.execute(query)
+    #         conn.commit()
+    #         cur.close()
+    #         conn.close()
+    #         return True, ""
+    #     except (Exception, psycopg2.Error) as error:
+    #         return False, error 
         
     def execute_multiple_query(self, query, params=()):
         try:
@@ -285,20 +291,20 @@ class Database:
         except (Exception, psycopg2.Error) as error:
                 return False, error 
 
-    def summerize_db_data(self, filepath):
-        query = self.load_sql_query(filepath).strip()
-        queries = [query.strip() for query in query.split(';') if query.strip()]
+    # def summerize_db_data(self, filepath):
+    #     query = self.load_sql_query(filepath).strip()
+    #     queries = [query.strip() for query in query.split(';') if query.strip()]
 
-        if len(queries) < 3:
-            print("Insufficient queries found in the file.", file=sys.stderr)
-            return
+    #     if len(queries) < 3:
+    #         print("Insufficient queries found in the file.", file=sys.stderr)
+    #         return
 
-        success, error = self.execute_query(query=queries, method="summary")
+    #     success, error = self.execute_query(query=queries, method="summary")
 
-        if(success):
-            print("Data has been successfully aggregated and inserted into author_totals table", file=sys.stderr)
-        else:
-            print(f"Error while aggregating data: {error}", file=sys.stderr)
+    #     if(success):
+    #         print("Data has been successfully aggregated and inserted into author_totals table", file=sys.stderr)
+    #     else:
+    #         print(f"Error while aggregating data: {error}", file=sys.stderr)
     
     def write_summary_to_csv(self, sql_filepath, csv_filepath):
         queries = self.get_queries(sql_filepath)
@@ -347,46 +353,4 @@ class Database:
             print(f"Error while dropping tables: {e}")
             return False, 400  # Failure response
        
-    # def recreate_table(self, filepath):
-    #     queries = self.load_sql_query(filepath).split(';')
-    #     queries = [query.strip() for query in queries if query.strip()]
-    #     if queries:
-    #         success, error = self.execute_query(query=queries, method="recreate")
-    #         if(success):
-    #             return "Tables created successfully!", 200
-    #         else:
-    #             return f"Error while creating table: {error}", 500
-    #     else:
-    #         return "No queries found in the file.", 400
-        
-    # def add_mock_table(self, filepath):
-    #     queries = self.load_sql_query(filepath).split(';')
-    #     queries = [query.strip() for query in queries if query.strip()]
-    #     if len(queries) > 1:
-    #        success, error = self.execute_query(query=queries, method="mock")
-    #        if(success):
-    #             return "Data added successfully!", 200
-    #        else:
-    #             return f"Error while adding data: {error}", 500
-    #     else:
-    #         return "No queries found in the file.", 400
     
-
-        # def initialize_db(self, filepath):
-    #     queries = self.get_queries(filepath=filepath)
-    #     if queries:
-    #         success, error = self.execute_multiple_query(query=queries)
-    #         if(success):
-    #             print("Database and tables created successfully!", file=sys.stderr)
-    #         else:
-    #             print(f"Error while creating database: {error}", file=sys.stderr)
-    #     else:
-    #         print("No queries found in the file.", file=sys.stderr)
-
-
-        
-    
-               
-            
-
-        

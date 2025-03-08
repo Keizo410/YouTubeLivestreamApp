@@ -1,0 +1,56 @@
+testing coverage
+routes/ 
+1. channels
+  - view_channel_listeners() : post, use read_channelListener() from Database class
+2. email
+  - send_email(): get, use Email and Database class for functions
+3. livestream
+  - view_livestreams(): get, use Database class for calling read_livestream()
+  - view_livestream_listeners(): post, use Database class for read_livesteam_listeners()
+4. subscriptions
+  - subscribe(): post, use Youtube class for subscribe_to_channel(), requires JSON file for youtuber(@----). It also uses websub class.
+  - unsubscribe(): delete, havent implmented yet
+  - view_youtubers(): get, use Database class
+  - view_channels(): get, use Databse class 
+5. view
+  - *need to refactor
+
+6. youtube
+  - youtube_callback(): get, expect args to have "hub.challenge" not null
+  - youtube_callback(): post, expect header has "Content-Type" as 'application/atom+xml'. tbd since complex
+
+utils/
+1. database
+  - getQueries
+  - loadSqlQuery
+  - youtuberTableAdapter
+  - channelTableAdapter
+  - livestreamTableAdapter
+  - createTables
+  - createSubscription
+  - readYoutuber
+  - readChannel
+  - readLivestream
+  - viewTable
+  - executeMultipleQueries
+  - executeLivestreamQueries
+  - executeQuery
+  - writeSummeryToCsv
+  - processLivechat
+  - dropTables
+
+2. emailHandler
+  - setDraft & getDraft @
+  - setCredentials & getCredentials @
+  - writeEmail @
+  - sendEmail @
+
+3. websub
+  - getNgrokConnection @
+  - subscribeToChannel @
+
+4. youtube
+  - isLivestream @
+  - getVideoId @
+  - getChannelHolderName @
+  - getChannelId @
