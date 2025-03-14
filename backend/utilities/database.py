@@ -10,7 +10,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Database:
+    """Creates Database instance"""
     def __init__(self):
+        """
+        Initialize the Database object.
+
+        """
         self.sql_file = ""
         self.data = ""
         self.query = ""
@@ -18,31 +23,73 @@ class Database:
         self.channelId = ""
 
     def set_videoId(self, videoId):
+        """
+        Set YouTube video ID to object.
+
+        Parameters: 
+        videoId - a string for YouTube video ID
+        """
         self.videoId = videoId
 
     def get_videoId(self):
+        """
+        Get method to retrieve YouTube video ID.
+        """
         return self.videoId
     
     def set_channelId(self, channelId):
+        """
+        Set YouTube channel ID to object.
+
+        Parameters: 
+        channelId - a string for YouTube channel ID
+        """
         self.channelId = channelId
 
     def get_channelId(self):
+        """
+        Get method to retrieve YouTube channel ID.
+        """
         return self.channelId
 
     def set_sql_file(self, filepath):
+        """
+        Set sql file path to object.
+
+        Parameters: 
+        filepath - a string for sql script path
+        """
         self.sql_file = filepath
 
     def get_sql_file(self):
+        """
+        Get method to retrieve sql script path.
+        """
         return self.sql_file
     
     def get_queries(self, filepath):
+        """
+        Get method to retrieve sql queries from a file.
+
+        Parameters:
+        filepath - a string for sql script path.
+        """
         return [query.strip() for query in self.load_sql_query(filepath).split(';') if query.strip()]
         
     def load_sql_query(self, sql_file):
+        """
+        Helper method for get_queries to load sql queries from a file.
+
+        Parameters:
+        sql_file - a string for sql script path.
+        """
         with open(sql_file, 'r') as file:
             return file.read()
         
     def get_db_connection(self):
+        """
+        Getter method for database connection.
+        """
         return psycopg2.connect(
             database=os.getenv("DATABASE"),
             user=os.getenv("USER"),
@@ -51,20 +98,57 @@ class Database:
             port=os.getenv("PORT")
         )
     
-    #test
     def youtuberTableAdapter(self, queryResult):
+        """
+        Converts a list of tuples containing YouTuber relation data into a list of dictionaries.
+
+        This method takes query results in tuple form and transforms them into a structured 
+        table-like format using dictionaries, making it easier to work with.
+
+        Parameters:
+        queryResult (list[tuple]): A list of tuples where each tuple represents a YouTuber record.
+                                Expected format: (id, name).
+
+        Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents a YouTuber.
+                    Example: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        """
         return [{"id": row[0], 
                  "name": row[1]} for row in queryResult]
     
-    #test
+    
     def channelTableAdapter(self, queryResult):
+        """
+        Converts a list of tuples containing channel relation data into a list of dictionaries.
+
+        This method takes query results in tuple form and transforms them into a structured 
+        table-like format using dictionaries.
+
+        Parameters:
+        queryResult (list[tuple]): A list of tuples where each tuple represents a channel record.
+                                Expected format: (id, name, youtuber).
+
+        Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents a channel.
+                    Example: [{"id": 1, "name": "TechChannel", "youtuber": "Alice"}]
+        """
         return [{"id": row[0], 
                  "name": row[1],
                  "youtuber": row[2]} for row in queryResult]
     
-    #test
     def livestreamTableAdapter(self, queryResult):
-        print(queryResult)
+        """
+        Converts retrieved livestream relation data into a structured table format.
+
+        Parameters:
+        queryResult (list[tuple]): A list of tuples where each tuple represents a livestream record.
+                                Expected format: (id, currentTime, date, channel_id, listener_id, donation, comment).
+
+        Returns:
+        list[dict]: A list of dictionaries representing livestreams.
+                    Example: [{"id": 1, "currentTime": "12:30:45", "date": "2024-03-09", 
+                            "channel_id": 5, "listener_id": 10, "donation": 50.0, "comment": "Great stream!"}]
+        """
         return [{"id": row[0], 
                  "currentTime": row[1].strftime("%H:%M:%S") if row[1] else None,
                  "date": row[2].strftime("%Y-%m-%d"), 
@@ -73,8 +157,16 @@ class Database:
                  "donation": row[5], 
                  "comment": row[6]} for row in queryResult]
     
-    #test
     def create_tables(self, filepath):
+        """
+        Reads SQL queries from a file and executes them to create database tables.
+
+        Parameters:
+        filepath (str): The path to the file containing SQL queries.
+
+        Returns:
+        None: Prints success or error messages to stderr.
+        """
         queries = self.get_queries(filepath=filepath)
         if queries:
             success, error = self.execute_multiple_query(query=queries)
@@ -86,15 +178,25 @@ class Database:
             print("No queries found in the file.", file=sys.stderr)
     
 
-    #test
     def create_subscription(self, channelID, channelName, channelHolderName):
+        """
+        Inserts a new subscription into the database.
+
+        Parameters:
+        channelID (str): The unique ID of the YouTube channel.
+        channelName (str): The name of the YouTube channel.
+        channelHolderName (list[str] | None): The name of the YouTuber (list with one string element).
+
+        Returns:
+        tuple[bool, str]: (True, "") if successful, (False, error message) if an error occurs.
+        """
         try: 
             conn = self.get_db_connection()
             cur = conn.cursor()
             youtuber_id=None
 
             if not channelHolderName:
-                channelHolderName = ["Unknown"]  # Default value if no name is provided
+                channelHolderName = ["Unknown"]  
             else:
                 cur.execute("""INSERT INTO youtuber (name)
                                 VALUES (%s) ON CONFLICT (name) DO NOTHING
@@ -108,7 +210,7 @@ class Database:
 
             cur.execute("""INSERT INTO channel (name, channelId, youtuber_id)
                             VALUES (%s, %s, %s) ON CONFLICT (name) DO NOTHING
-                        """, (channelName, channelID, youtuber_id))  # Use the fetched youtuber_id
+                        """, (channelName, channelID, youtuber_id))  
             conn.commit()
             cur.close()
             conn.close()
@@ -116,93 +218,97 @@ class Database:
         except (Exception, psycopg2.Error) as error:
             return False, error 
 
+    def read_data(self, query, adapter_method):
+        """
+        Generic method to execute a SELECT query and adapt the results using the provided adapter method.
 
-    def update_subscription(self):
-        pass
+        Parameters:
+        query (str): The SQL query to execute.
+        adapter_method (function): The method to adapt the fetched data into a structured format.
 
-    def delete_subscription(self):
-        pass
-    
-
-    #return table of youtubers associated with 0..n channels
-    def read_youtuber(self):
-        try: 
-            conn = self.get_db_connection()
-            cur = conn.cursor()
-            cur.execute("""select * from youtuber""")
-            table = cur.fetchall()  # Fetch all rows
-            result = self.youtuberTableAdapter(table)            
-            cur.close()
-            conn.close()
-            return True, result 
-        except (Exception, psycopg2.Error) as error:
-            return False, error 
-
-    #return table of channels associated with youtuber name, total earned livestreaming money, total number of livestreaming session, 
-    def read_channel(self):
-        try: 
-            conn = self.get_db_connection()
-            cur = conn.cursor()
-            cur.execute("""select channel.id, channel.name, youtuber.name from channel 
-                        left join youtuber on channel.youtuber_id = youtuber.id""")
-            table = cur.fetchall()  # Fetch all rows
-            result = self.channelTableAdapter(table)            
-            cur.close()
-            conn.close()
-            return True, result 
-        except (Exception, psycopg2.Error) as error:
-            return False, error 
-
-    #return table of livestreams associated with channel names, total earned livestreaming money, number of comments
-    def read_livestream(self):
-        try: 
-            conn = self.get_db_connection()
-            cur = conn.cursor()
-            cur.execute("""select * from livestream""")
-            table = cur.fetchall()  # Fetch all rows
-            result = self.livestreamTableAdapter(table)            
-            cur.close()
-            conn.close()
-            return True, result 
-        except (Exception, psycopg2.Error) as error:
-            return False, error 
-
-    #return table of listeners for specific channel
-    def read_channelListener(self):
-        pass
-
-    #return table of listerners for specific livestreaming
-    def read_livestreamListener(self):
-        pass
-
-    def view_table(self, filepath):
+        Returns:
+        tuple[bool, list[dict] | str]: (True, adapted result) if successful, (False, error message) if an error occurs.
+        """
         try:
-            queries = self.get_queries(filepath=filepath)
             conn = self.get_db_connection()
             cur = conn.cursor()
-            cur.execute(queries[0])
-            results = cur.fetchall()
-            columns = [desc[0] for desc in cur.description]
+            cur.execute(query)  
+            table = cur.fetchall() 
+            result = adapter_method(table)  
             cur.close()
             conn.close()
-            data = [dict(zip(columns, row)) for row in results]
-            return [data, columns], 200
+            return True, result
         except (Exception, psycopg2.Error) as error:
-            return f"Error while fetching data: {error}", 500
+            return False, str(error)
+    
+    def read_youtuber(self):
+        """
+        Retrieves all YouTubers and returns them in a structured format.
+
+        Returns:
+        tuple[bool, list[dict] | str]: (True, list of youtubers) if successful, (False, error message) if an error occurs.
+        """
+        query = """SELECT * FROM youtuber"""
+        return self.read_data(query, self.youtuberTableAdapter)
+
+    def read_channel(self):
+        """
+        Retrieves all channels along with the associated YouTuber's name.
+
+        Returns:
+        tuple[bool, list[dict] | str]: (True, list of channels) if successful, (False, error message) if an error occurs.
+        """
+        query = """SELECT channel.id, channel.name, youtuber.name 
+                FROM channel 
+                LEFT JOIN youtuber ON channel.youtuber_id = youtuber.id"""
+        return self.read_data(query, self.channelTableAdapter)
+
+    def read_livestream(self):
+        """
+        Retrieves all livestream records.
+
+        Returns:
+        tuple[bool, list[dict] | str]: (True, list of livestreams) if successful, (False, error message) if an error occurs.
+        """
+        query = """SELECT * FROM livestream"""
+        return self.read_data(query, self.livestreamTableAdapter)
+
+    # def view_table(self, filepath):
+    #     """
+    #     Reads and executes a query from the given file to retrieve data from the database.
         
-    # def execute_single_query(self, query):
+    #     Args:
+    #         filepath (str): Path to the file containing the SQL query.
+
+    #     Returns:
+    #         tuple: A list containing the retrieved data as dictionaries and column names, along with a status code.
+    #             If an error occurs, returns an error message and a 500 status code.
+    #     """
     #     try:
+    #         queries = self.get_queries(filepath=filepath)
     #         conn = self.get_db_connection()
     #         cur = conn.cursor()
-    #         cur.execute(query)
-    #         conn.commit()
+    #         cur.execute(queries[0])
+    #         results = cur.fetchall()
+    #         columns = [desc[0] for desc in cur.description]
     #         cur.close()
     #         conn.close()
-    #         return True, ""
+    #         data = [dict(zip(columns, row)) for row in results]
+    #         return [data, columns], 200
     #     except (Exception, psycopg2.Error) as error:
-    #         return False, error 
+    #         return f"Error while fetching data: {error}", 500
         
     def execute_multiple_query(self, query, params=()):
+        """
+        Executes multiple SQL queries in a single transaction.
+
+        Args:
+            query (list): A list of SQL queries to execute.
+            params (tuple, optional): Parameters for parameterized queries. Defaults to an empty tuple.
+
+        Returns:
+            tuple: A boolean indicating success or failure, and an error message if applicable.
+        """
         try:
             conn = self.get_db_connection()
             cur = conn.cursor()
@@ -218,6 +324,15 @@ class Database:
             return False, error 
         
     def exucture_livestream_query(self):
+        """
+        Fetches live chat messages from a YouTube livestream and stores them in the database.
+
+        Retrieves the video ID and channel name, fetches messages from the live chat, and inserts
+        data into the 'listener' and 'livestream' tables.
+
+        Returns:
+            tuple: A boolean indicating success or failure, and an error message if applicable.
+        """
         try:
             conn = self.get_db_connection()
             cur = conn.cursor()
@@ -266,6 +381,22 @@ class Database:
             return False, error 
     
     def execute_query(self, query="", method="", csv_filepath=""):
+        """
+        Executes a database query based on the specified method.
+        
+        Supported methods:
+        - "summary": Executes a summary aggregation query.
+        - "csv": Exports query results to a CSV file.
+        - "drop": Executes a drop table or deletion query.
+
+        Args:
+            query (list or str): A list of queries or a single query string.
+            method (str): The execution mode ("summary", "csv", or "drop").
+            csv_filepath (str, optional): File path for CSV export if method is "csv".
+
+        Returns:
+            tuple: A boolean indicating success or failure, and an error message if applicable.
+        """
         try:
             conn = self.get_db_connection()
             cur = conn.cursor()
@@ -290,23 +421,21 @@ class Database:
             return True, ""
         except (Exception, psycopg2.Error) as error:
                 return False, error 
-
-    # def summerize_db_data(self, filepath):
-    #     query = self.load_sql_query(filepath).strip()
-    #     queries = [query.strip() for query in query.split(';') if query.strip()]
-
-    #     if len(queries) < 3:
-    #         print("Insufficient queries found in the file.", file=sys.stderr)
-    #         return
-
-    #     success, error = self.execute_query(query=queries, method="summary")
-
-    #     if(success):
-    #         print("Data has been successfully aggregated and inserted into author_totals table", file=sys.stderr)
-    #     else:
-    #         print(f"Error while aggregating data: {error}", file=sys.stderr)
     
     def write_summary_to_csv(self, sql_filepath, csv_filepath):
+        """
+        Extracts SQL queries from the provided file, executes them, and writes the results to a CSV file.
+
+        Args:
+            sql_filepath (str): The file path of the SQL file containing the queries.
+            csv_filepath (str): The file path where the CSV output should be saved.
+
+        Returns:
+            str or None: Returns the CSV file path if the operation was successful, otherwise None.
+            
+        Raises:
+            None
+        """
         queries = self.get_queries(sql_filepath)
         if not queries:
             return None
@@ -319,6 +448,20 @@ class Database:
             return None
         
     def process_livechat(self, vd, ch):
+        """
+        Tracks live chat data for a given video and channel by setting video and channel IDs
+        and executing the livestream query.
+
+        Args:
+            vd (object): An object containing the video ID.
+            ch (object): An object containing the channel ID.
+
+        Returns:
+            None
+            
+        Raises:
+            None
+        """
         print("Tracking Started...")
         self.set_videoId(str(vd.value))
         self.set_channelId(str(ch.value))
@@ -329,28 +472,28 @@ class Database:
             print("SQL execusion during live streaming was unsuccessfull: ", {error})
 
     def drop_table(self, filepath):
-     # Define the DROP TABLE query directly
-        drop_query = "DROP TABLE IF EXISTS livestream, channel, listener, youtuber CASCADE;"
+        """
+        Drops the 'livestream', 'channel', 'listener', and 'youtuber' tables from the database if they exist.
+
+        This method ensures the specified tables are removed from the database, handling potential exceptions
+        during the execution of the SQL query.
+
+        Args:
+            filepath (str): The file path related to this operation (not used in this function but could be used for logging).
+
+        Returns:
+            tuple: A tuple containing a boolean indicating success (True/False) and an HTTP status code (200/400).
+            
+        Raises:
+            Exception: If an error occurs during the database operation, it is caught and printed.
+        """
+        queries = self.get_queries(filepath)
+        if not queries:
+            return None
         
-        try:
-            # Establish database connection
-            conn = self.get_db_connection()
-            
-            # Execute the drop query
-            cur = conn.cursor()
-            cur.execute(drop_query)
-            
-            # Commit the transaction
-            conn.commit()
-            
-            # Close the cursor and connection
-            cur.close()
-            conn.close()
-            
-            return True, 200  # Success response
-        except Exception as e:
-            # Handle any errors and rollback
-            print(f"Error while dropping tables: {e}")
-            return False, 400  # Failure response
-       
-    
+        success, error = self.execute_query(query=queries, method="drop")
+        if(success):
+            return True, 200
+        else:
+            print(f"Error while dropping tables: {error}", file=sys.stderr)
+            return False, 400

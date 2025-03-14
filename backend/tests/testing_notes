@@ -21,23 +21,15 @@ routes/
 
 utils/
 1. database
-  - getQueries
-  - loadSqlQuery
-  - youtuberTableAdapter
-  - channelTableAdapter
-  - livestreamTableAdapter
-  - createTables
+  - youtuberTableAdapter @
+  - channelTableAdapter @
+  - livestreamTableAdapter @
+  - createTables @
   - createSubscription
-  - readYoutuber
-  - readChannel
-  - readLivestream
-  - viewTable
+  - read_data
+  - executeQuery
   - executeMultipleQueries
   - executeLivestreamQueries
-  - executeQuery
-  - writeSummeryToCsv
-  - processLivechat
-  - dropTables
 
 2. emailHandler
   - setDraft & getDraft @
