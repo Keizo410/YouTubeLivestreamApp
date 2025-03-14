@@ -8,16 +8,26 @@ jobs:
         uses: actions/checkout@v3
       - run: echo "$(cat hello_world.txt)"
 
-      - name: Set up environment variables for Docker container
+      - name: Create `.env` file from environment variables
         run: |
-          echo "FLASK_APP=server.py" >> $GITHUB_ENV
-          echo "FLASK_ENV=development" >> $GITHUB_ENV
-          echo "FLASK_RUN_PORT=8000" >> $GITHUB_ENV
-          echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
-          echo "DATABASE=${{ secrets.DATABASE }}" >> $GITHUB_ENV
-          echo "USER=${{ secrets.USER }}" >> $GITHUB_ENV
-          echo "PASSWORD=${{ secrets.PASSWORD }}" >> $GITHUB_ENV
-          echo "NGROK_AUTHTOKEN=${{ secrets.NGROK_AUTHTOKEN }}" >> $GITHUB_ENV
+          echo "FLASK_APP=$FLASK_APP" >> .env
+          echo "FLASK_ENV=$FLASK_ENV" >> .env
+          echo "FLASK_RUN_PORT=$FLASK_RUN_PORT" >> .env
+          echo "API_KEY=$API_KEY" >> .env
+          echo "BASE_YT_URL=$BASE_YT_URL" >> .env
+          echo "API_URL=$API_URL" >> .env
+          echo "HUB_URL=$HUB_URL" >> .env
+          echo "BASE_TOPIC_URL=$BASE_TOPIC_URL" >> .env
+          echo "TOPIC_URL=$TOPIC_URL" >> .env
+          echo "NGROK_AUTHTOKEN=$NGROK_AUTHTOKEN" >> .env
+          echo "APP_PASSWORD=$APP_PASSWORD" >> .env
+          echo "SENDER_EMAIL=$SENDER_EMAIL" >> .env
+          echo "RECEIVER_EMAIL=$RECEIVER_EMAIL" >> .env
+          echo "DATABASE=$DATABASE" >> .env
+          echo "USER=$USER" >> .env
+          echo "PASSWORD=$PASSWORD" >> .env
+          echo "HOST=$HOST" >> .env
+          echo "PORT=$PORT" >> .env
 
       - name: Run Docker Compose and Tests
         uses: adambirds/docker-compose-action@v1.5.0
