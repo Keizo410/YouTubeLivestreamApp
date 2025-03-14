@@ -1,7 +1,7 @@
-name: hello-world
+name: Running unit test suits
 on: push 
 jobs: 
-  hello-world-job: 
+  automated-testing-job: 
     runs-on: ubuntu-latest
     steps: 
       - name: Check out repository code
