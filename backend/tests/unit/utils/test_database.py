@@ -42,8 +42,6 @@ def test_create_tables_success(mock_execute, mock_get_queries, database_instance
     mock_get_queries.assert_called_once()
     mock_execute.assert_called_once()
     
-@patch("utilities.database.Database.get_db_connection", return_value = MagicMock())
-@patch("cursor", return_value = MagicMock)
 def test_create_subscription_success():
     """Test successful subscrition."""
     pass
