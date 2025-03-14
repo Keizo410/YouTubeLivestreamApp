@@ -32,5 +32,11 @@ jobs:
       - name: Copy .env file to backend directory
         run: cp .env ./backend/.env
 
-      - name: Shut down Docker containers
-        run: docker-compose down --volumes --remove-orphans
+      - name: Run Docker Compose and Tests
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "./backend/docker-compose.yml"
+          up-flags: "--build"
+          down-flags: "--volumes"
+          test-container: "flask-web"
+          test-command: "pytest tests/"
