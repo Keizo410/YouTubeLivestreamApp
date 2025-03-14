@@ -7,3 +7,11 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: echo "$(cat hello_world.txt)"
+
+      - uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "./backend/docker-compose.yml"
+          up-flags: "--build"
+          down-flags: "--volumes"
+          test-container: "flask-web"
+          test-command: "pytest tests/"
