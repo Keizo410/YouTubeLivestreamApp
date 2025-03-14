@@ -3,34 +3,31 @@ on: push
 jobs: 
   automated-testing-job: 
     runs-on: ubuntu-latest
-    env:
-      FLASK_APP: ${{ secrets.FLASK_APP }}
-      FLASK_ENV: ${{ secrets.FLASK_ENV }}
-      FLASK_RUN_PORT: ${{ secrets.FLASK_RUN_PORT }}
-      API_KEY: ${{ secrets.API_KEY }}
-      BASE_YT_URL: ${{ secrets.BASE_YT_URL }}
-      API_URL: ${{ secrets.API_URL }}
-      HUB_URL: ${{ secrets.HUB_URL }}
-      BASE_TOPIC_URL: ${{ secrets.BASE_TOPIC_URL }}
-      TOPIC_URL: ${{ secrets.TOPIC_URL }}
-      NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
-      APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
-      SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
-      RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
-      DATABASE: ${{ secrets.DATABASE }}
-      USER: ${{ secrets.USER }}
-      PASSWORD: ${{ secrets.PASSWORD }}
-      HOST: ${{ secrets.HOST }}
-      PORT: ${{ secrets.PORT }}
     steps: 
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: echo "$(cat hello_world.txt)"
 
-      - uses: adambirds/docker-compose-action@v1.5.0
+      - name: Set up environment variables for Docker container
+        run: |
+          echo "FLASK_APP=server.py" >> $GITHUB_ENV
+          echo "FLASK_ENV=development" >> $GITHUB_ENV
+          echo "FLASK_RUN_PORT=8000" >> $GITHUB_ENV
+          echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
+          echo "DATABASE=${{ secrets.DATABASE }}" >> $GITHUB_ENV
+          echo "USER=${{ secrets.USER }}" >> $GITHUB_ENV
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> $GITHUB_ENV
+          echo "NGROK_AUTHTOKEN=${{ secrets.NGROK_AUTHTOKEN }}" >> $GITHUB_ENV
+
+      - name: Run Docker Compose and Tests
+        uses: adambirds/docker-compose-action@v1.5.0
         with:
           compose-file: "./backend/docker-compose.yml"
           up-flags: "--build"
           down-flags: "--volumes"
           test-container: "flask-web"
           test-command: "pytest tests/"
+
+      # Optionally, shut down and clean up the container
+      - name: Shut down Docker containers
+        run: docker-compose down --volumes --remove-orphans
