@@ -27,8 +27,8 @@ def test_credentials(empty_email):
     assert cred_password == password
 
 
-def test_write_email(empty_email):
-    """Test write email function"""
+def test_write_email_success(empty_email):
+    """Test write email function successful"""
     sender = "test"
     password = "test"
     receiver = "test"
