@@ -1,3 +1,4 @@
+from collections import defaultdict
 from sqlite3 import paramstyle
 import psycopg2
 import sys
@@ -5,7 +6,8 @@ import csv
 import os
 import pytchat 
 from dotenv import load_dotenv
-
+from datetime import datetime
+import pandas as pd
 
 load_dotenv()
 
@@ -157,6 +159,25 @@ class Database:
                  "donation": row[5], 
                  "comment": row[6]} for row in queryResult]
     
+    def livestreamSummaryAdapter(self, queryResult):
+        """
+        Converts retrieved livestream relation data into a structured table format.
+
+        Parameters:
+        queryResult (list[tuple]): A list of tuples where each tuple represents a livestream record.
+                                Expected format: (date, name, sales).
+
+        Returns:
+        list[dict]: A list of dictionaries representing livestreams.
+                    Example: [{"date": 11/02/11, "YoutuberA": 1000, "YoutuberB": 2000}]
+        """
+        df = pd.DataFrame(queryResult, columns=['date', 'channel_name', 'sales'])
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df['date'] = df['date'].dt.strftime('%Y-%m-%d')
+        pivot_df = df.pivot(index='date', columns='channel_name', values='sales').fillna(0)
+        chart_data = pivot_df.reset_index().to_dict(orient='records')
+        return chart_data
+    
     def create_tables(self, filepath):
         """
         Reads SQL queries from a file and executes them to create database tables.
@@ -272,6 +293,25 @@ class Database:
         """
         query = """SELECT * FROM livestream"""
         return self.read_data(query, self.livestreamTableAdapter)
+    
+    def read_livestream_summary(self):
+        """
+        Retrieves livestream records and convert into summary data format.
+
+        Returns:
+        tuple[bool, list[dict] | str]: (True, list of livestreams) if successful, (False, error message) if an error occurs.
+        """
+        query = """
+                SELECT
+                livestream.date AS date,
+                channel.name AS channel_name,
+                SUM(livestream.donation) AS sales
+                FROM livestream 
+                JOIN channel  ON livestream.channel_id = channel.id
+                GROUP BY livestream.date, channel.name
+                ORDER BY livestream.date; 
+                """
+        return self.read_data(query, self.livestreamSummaryAdapter)
 
     # def view_table(self, filepath):
     #     """

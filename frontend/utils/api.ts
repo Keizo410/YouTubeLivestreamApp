@@ -14,6 +14,17 @@ export async function fetchYoutubers() {
   ]);
 }
 
+export async function fetchLivestreamsSummary(){
+  const res = await fetch(`${BACKEND_URL}/api/livestreams/summary`);
+  if (!res.ok) {
+    throw new Error("livestream summary fetching error");
+  }
+
+  const data = await res.json();
+
+  return data
+}
+
 export async function fetchChannels() {
   const res = await fetch(`${BACKEND_URL}/api/subscriptions/channels`);
   if (!res.ok) {

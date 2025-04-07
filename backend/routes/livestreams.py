@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, jsonify, abort
 from utilities.database import Database
 
@@ -16,3 +17,8 @@ def view_livestream_listeners():
     if(success):
         return "", 200
     return abort(400)
+
+@livestreams_bp.route('/api/livestreams/summary', methods=['GET'])
+def view_livestreams_summary():
+    success, result = db.read_livestream_summary()
+    return jsonify(result), 200 if success else abort(400)
