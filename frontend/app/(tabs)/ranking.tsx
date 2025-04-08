@@ -3,50 +3,29 @@ import {
   Text,
   View,
   StyleSheet,
-  Button,
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import { Table, Row, Rows } from "react-native-table-component";
 import {
   fetchChannels,
   fetchLivestreams,
-  fetchLivestreamsSummary,
+  fetchLivestreamsBarSummary,
+  fetchLivestreamsChartSummary,
   fetchYoutubers,
 } from "@/utils/api";
-import { LinearGradient } from "expo-linear-gradient";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import TableComponent from "@/components/table";
+import ChartComponent from "../../components/chart";
+import BarComponent from "@/components/bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Ranking() {
-  const lineColors = [
-    "#8884d8", // purple
-    "#82ca9d", // green
-    "#ffc658", // yellow
-    "#ff8042", // orange
-    "#0088FE", // blue
-    "#FF4069", // red
-    "#00C49F", // teal
-    "#FFBB28", // amber
-    "#FF5733", // coral
-    "#9467BD", // lavender
-    "#8DD1E1", // light blue
-    "#A4DE6C", // light green
-  ];
-
   const [userView, setUserView] = useState("youtubers");
   const [chartData, setChartData] = useState([]);
+  const [totalSalesBarData, setTotalSalesBarData] = useState([]);
   const [data, setData] = useState({
     tableHead: [],
     tableData: [],
@@ -54,12 +33,19 @@ export default function Ranking() {
   const [channelArray, setChannelArray] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [livestreamScreen, setLivestreamScreen] = useState("livestream");
+  const toggleButton = (newView: React.SetStateAction<string>) => {
+    setUserView(newView);
+  };
+  const toggleChartViewButton = (newView: React.SetStateAction<string>) => {
+    setLivestreamScreen(newView);
+  };
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    const fetchData = async () => {
+    const fetchTableData = async () => {
       try {
         let tableData;
         let tableHead;
@@ -91,29 +77,8 @@ export default function Ranking() {
       }
     };
 
-    const fetchChartData = async () => {
-      try {
-        let rawData;
-
-        if (userView === "livestreams") {
-          rawData = await fetchLivestreamsSummary();
-        }
-        
-        setChartData(rawData);
-      } catch (err) {
-        setError(err?.message ?? "Error at fetchChartData");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChartData();
-    fetchData();
+    fetchTableData();
   }, [userView]);
-
-  const toggleButton = (newView: React.SetStateAction<string>) => {
-    setUserView(newView);
-  };
 
   useEffect(() => {
     const registerChannelNames = () => {
@@ -134,6 +99,44 @@ export default function Ranking() {
       registerChannelNames();
     }
   }, [chartData]);
+
+  useEffect(() => {
+    const fetchBarData = async () => {
+      try {
+        let rawData;
+
+        rawData = await fetchLivestreamsBarSummary();
+
+        setTotalSalesBarData(rawData);
+      } catch (err) {
+        setError(err?.message ?? "Error at fetchChartData");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBarData();
+  }, [livestreamScreen === "bar"]);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        let rawData;
+
+        if (userView === "livestreams") {
+          rawData = await fetchLivestreamsChartSummary();
+        }
+
+        setChartData(rawData);
+      } catch (err) {
+        setError(err?.message ?? "Error at fetchChartData");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChartData();
+  }, [livestreamScreen === "chart"]);
 
   return (
     <View style={styles.container}>
@@ -169,35 +172,43 @@ export default function Ranking() {
         ) : error ? (
           <Text style={styles.headText}>{error}</Text>
         ) : userView != "livestreams" ? (
-          <Table borderStyle={styles.tableStyle} style={styles.table}>
-            <Row
-              data={data.tableHead}
-              style={styles.head}
-              textStyle={styles.headText}
-            />
-            <Rows data={data.tableData} textStyle={styles.dataText} />
-          </Table>
+          <TableComponent data={data} />
         ) : (
-          <View>
-            <LineChart
-              width={0.7 * width}
-              height={0.7 * height}
-              data={chartData}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              {channelArray.map((channel, index) => (
-                <Line
-                  key={channel}
-                  type="monotone"
-                  dataKey={channel as string}
-                  stroke={lineColors[index % lineColors.length]}
-                />
-              ))}
-            </LineChart>
+          <View style={styles.chartBarContainer}>
+            <SafeAreaView style={styles.chartBarChildContainer}>
+              <ScrollView horizontal={true}>
+                {livestreamScreen === "chart" ? (
+                  <ChartComponent
+                    chartData={chartData}
+                    channelArray={channelArray}
+                  />
+                ) : (
+                  <BarComponent data={totalSalesBarData} />
+                )}
+              </ScrollView>
+            </SafeAreaView>
+            <View style={styles.chartBarButtonContainer}>
+              <TouchableOpacity
+                style={
+                  livestreamScreen === "chart"
+                    ? styles.selectedButton
+                    : styles.button
+                }
+                onPress={() => toggleChartViewButton("chart")}
+              >
+                <Text style={styles.buttonText}>Chart</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={
+                  livestreamScreen === "livestream"
+                    ? styles.selectedButton
+                    : styles.button
+                }
+                onPress={() => toggleChartViewButton("livestream")}
+              >
+                <Text style={styles.buttonText}>Bar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </View>
@@ -222,25 +233,15 @@ const styles = StyleSheet.create({
   },
   tableContainer: {
     flex: 9,
-    width: "70%",
-  },
-  tableStyle: {
-    borderWidth: 3,
-    borderColor: "#5fa8d3",
+    width: "80%",
+    display: "flex",
   },
   head: {
     height: 40,
   },
-  table: {},
   headText: {
     color: "black",
     fontSize: width * 0.012,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  dataText: {
-    color: "black",
-    fontSize: width * 0.01,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -263,6 +264,19 @@ const styles = StyleSheet.create({
     height: height * 0.05,
     display: "flex",
     justifyContent: "center",
+    alignItems: "center",
+  },
+  chartBarContainer: {
+    flex: 1,
+    flexDirection: "row",
+    display: "flex",
+    width: "100%",
+  },
+  chartBarChildContainer: {
+    flex: 9,
+  },
+  chartBarButtonContainer: {
+    flex: 1,
     alignItems: "center",
   },
 });

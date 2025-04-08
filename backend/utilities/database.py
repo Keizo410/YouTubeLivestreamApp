@@ -159,7 +159,7 @@ class Database:
                  "donation": row[5], 
                  "comment": row[6]} for row in queryResult]
     
-    def livestreamSummaryAdapter(self, queryResult):
+    def livestreamChartSummaryAdapter(self, queryResult):
         """
         Converts retrieved livestream relation data into a structured table format.
 
@@ -178,6 +178,23 @@ class Database:
         chart_data = pivot_df.reset_index().to_dict(orient='records')
         return chart_data
     
+    def livestreamBarSummaryAdapter(self, queryResult):
+        """
+        Converts retrieved livestream relation data into a structured table format.
+
+        Parameters:
+        queryResult (list[tuple]): A list of tuples where each tuple represents a livestream record.
+                                Expected format: (date, name, sales).
+
+        Returns:
+        list[dict]: A list of dictionaries representing livestreams.
+                    Example: [{"name": "YoutuberA", "sales": 2000}]
+        """
+        return [{
+            "name": row[0],
+            "sales": row[1]
+        } for row in queryResult]
+
     def create_tables(self, filepath):
         """
         Reads SQL queries from a file and executes them to create database tables.
@@ -294,9 +311,9 @@ class Database:
         query = """SELECT * FROM livestream"""
         return self.read_data(query, self.livestreamTableAdapter)
     
-    def read_livestream_summary(self):
+    def read_livestream_chart_summary(self):
         """
-        Retrieves livestream records and convert into summary data format.
+        Retrieves livestream records and convert into chart summary data format.
 
         Returns:
         tuple[bool, list[dict] | str]: (True, list of livestreams) if successful, (False, error message) if an error occurs.
@@ -311,8 +328,26 @@ class Database:
                 GROUP BY livestream.date, channel.name
                 ORDER BY livestream.date; 
                 """
-        return self.read_data(query, self.livestreamSummaryAdapter)
+        return self.read_data(query, self.livestreamChartSummaryAdapter)
 
+    def read_livestream_bar_summary(self):
+        """
+        Retrieves livestream records and convert into bar summary data format.
+
+        Returns:
+        tuple[bool, list[dict] | str]: (True, list of livestreams) if successful, (False, error message) if an error occurs.
+        """
+        query = """
+                SELECT
+                channel.name AS channel_name,
+                SUM(livestream.donation) AS sales
+                FROM livestream 
+                JOIN channel  ON livestream.channel_id = channel.id
+                GROUP BY channel.name
+                ORDER BY sales desc; 
+                """
+        return self.read_data(query, self.livestreamBarSummaryAdapter)
+    
     # def view_table(self, filepath):
     #     """
     #     Reads and executes a query from the given file to retrieve data from the database.

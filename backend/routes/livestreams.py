@@ -18,7 +18,12 @@ def view_livestream_listeners():
         return "", 200
     return abort(400)
 
-@livestreams_bp.route('/api/livestreams/summary', methods=['GET'])
-def view_livestreams_summary():
-    success, result = db.read_livestream_summary()
+@livestreams_bp.route('/api/livestreams/summary/chart', methods=['GET'])
+def view_livestreams_chart_summary():
+    success, result = db.read_livestream_chart_summary()
+    return jsonify(result), 200 if success else abort(400)
+
+@livestreams_bp.route('/api/livestreams/summary/bar', methods=['GET'])
+def view_livestreams_bar_summary():
+    success, result = db.read_livestream_bar_summary()
     return jsonify(result), 200 if success else abort(400)

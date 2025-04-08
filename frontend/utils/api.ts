@@ -14,10 +14,21 @@ export async function fetchYoutubers() {
   ]);
 }
 
-export async function fetchLivestreamsSummary(){
-  const res = await fetch(`${BACKEND_URL}/api/livestreams/summary`);
+export async function fetchLivestreamsBarSummary(){
+  const res = await fetch(`${BACKEND_URL}/api/livestreams/summary/bar`);
   if (!res.ok) {
-    throw new Error("livestream summary fetching error");
+    throw new Error("livestream summary(bar) fetching error");
+  }
+
+  const data = await res.json();
+
+  return data
+}
+
+export async function fetchLivestreamsChartSummary(){
+  const res = await fetch(`${BACKEND_URL}/api/livestreams/summary/chart`);
+  if (!res.ok) {
+    throw new Error("livestream summary(chart) fetching error");
   }
 
   const data = await res.json();

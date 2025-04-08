@@ -32,11 +32,17 @@ CREATE TABLE IF NOT EXISTS livestream (
 INSERT INTO youtuber (name) VALUES ('Unknown') on CONFLICT (name) do nothing;
 INSERT INTO youtuber (name) VALUES ('StreamerA') ON CONFLICT (name) DO NOTHING;
 INSERT INTO youtuber (name) VALUES ('StreamerB') ON CONFLICT (name) DO NOTHING;
+INSERT INTO youtuber (name) VALUES ('StreamerC') ON CONFLICT (name) DO NOTHING;
+INSERT INTO youtuber (name) VALUES ('StreamerD') ON CONFLICT (name) DO NOTHING;
+INSERT INTO youtuber (name) VALUES ('StreamerE') ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO channel (name, channelId, youtuber_id) VALUES 
 ('Channel 1', '1', 1) on conflict (name, youtuber_id) do nothing;
 INSERT INTO channel (name, channelId, youtuber_id) VALUES ('Channel Alpha', '2', 2) ON CONFLICT (name, youtuber_id) DO NOTHING;
 INSERT INTO channel (name, channelId, youtuber_id) VALUES ('Channel Beta', '3', 3) ON CONFLICT (name, youtuber_id) DO NOTHING;
+INSERT INTO channel (name, channelId, youtuber_id) VALUES ('Channel Ceta', '4', 4) ON CONFLICT (name, youtuber_id) DO NOTHING;
+INSERT INTO channel (name, channelId, youtuber_id) VALUES ('Channel Deta', '5', 5) ON CONFLICT (name, youtuber_id) DO NOTHING;
+INSERT INTO channel (name, channelId, youtuber_id) VALUES ('Channel Eeta', '6', 6) ON CONFLICT (name, youtuber_id) DO NOTHING;
 
 INSERT INTO listener (name) VALUES ('Unknown') on CONFLICT (name) do nothing;
 INSERT INTO listener (name) VALUES ('Alice') ON CONFLICT (name) DO NOTHING;
@@ -76,4 +82,10 @@ VALUES (2, 3, 20.0, 'Super cool!');
 
 INSERT INTO livestream (channel_id, listener_id, donation, comment) 
 VALUES (3, 4, 10.0, 'Just dropped by!');
+
+INSERT INTO livestream (channel_id, listener_id, donation, comment) 
+VALUES (4, 4, 20.0, 'Interesting');
+
+INSERT INTO livestream (channel_id, listener_id, donation, comment) 
+VALUES (5, 4, 0, 'Funny');
 
