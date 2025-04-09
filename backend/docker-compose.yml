@@ -10,7 +10,17 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - db
+      - ngrok
+    networks:
+      - app-network
+
+  ngrok:
+    image: wernight/ngrok
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - NGROK_PORT=flask-web:${FLASK_RUN_PORT}
+    ports:
+      - "4040:4040"
     networks:
       - app-network
   
