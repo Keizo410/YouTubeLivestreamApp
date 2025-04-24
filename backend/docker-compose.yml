@@ -12,9 +12,7 @@ services:
     depends_on:
       - db
     networks:
-      - app-network
-
-  
+      - app-network 
   db:
     image: postgres:13
     restart: always
