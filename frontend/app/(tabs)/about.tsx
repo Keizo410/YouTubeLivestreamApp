@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, Dimensions, Image } from "react-native";
 const { width } = Dimensions.get("window");
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { fetchChannelNum } from "@/utils/api";
+import { fetchChannelNum } from "@/app/api/api";
 
 export default function AboutScreen() {
   const [channelNum, setChannelNum] = useState("+5");

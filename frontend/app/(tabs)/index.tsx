@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Text,
   View,
@@ -9,15 +11,14 @@ import {
 } from "react-native";
 import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { subscribeToYoutubers } from "@/utils/api";
+import { subscribeToYoutubers } from "@/app/api/api";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-const { width } = Dimensions.get("window");
+import {useWindowDimensions} from 'react-native';
 
 export default function Index() {
-  const [text, onChangeText] = useState(
-    "Paste your favorite YouTuber Handle (@...)"
-  );
+  const {height, width} = useWindowDimensions();
+  const [text, onChangeText] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubscription = async (youtuber: string) => {
@@ -44,16 +45,16 @@ export default function Index() {
   return (
     <LinearGradient
             colors={["#5fa8d3", "#a0d8ef", "#ffffff"]} style={styles.container}>
-      <Text style={styles.text}>Welcome to YouTube LiveStream Tracker</Text>
+      <Text style={{...styles.text, fontSize: width*0.016}}>Welcome to YouTube LiveStream Tracker</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
           <TextInput
-            style={styles.input}
+            style={{...styles.input, fontSize: width*0.01}}
             onChangeText={onChangeText}
             value={text}
-            placeholder="Enter YouTuber name"
+            placeholder="Paste your favorite YouTuber Handle (@...)"
           />
           <Button color="#5fa8d3" title="Request" onPress={() => handleSubscription(text)} />
         </>
@@ -72,7 +73,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "black",
-    fontSize: width * 0.016,
     fontWeight: "bold",
   },
   button: {
@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     color: "black",
-    fontSize: width * 0.01,
     fontWeight: "500",
   },
 });

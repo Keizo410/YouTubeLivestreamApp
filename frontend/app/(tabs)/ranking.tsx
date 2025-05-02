@@ -14,7 +14,7 @@ import {
   fetchLivestreamsBarSummary,
   fetchLivestreamsChartSummary,
   fetchYoutubers,
-} from "@/utils/api";
+} from "@/app/api/api";
 import TableComponent from "@/components/table";
 import ChartComponent from "../../components/chart";
 import BarComponent from "@/components/bar";
