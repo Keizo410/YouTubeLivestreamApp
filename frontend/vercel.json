@@ -1,3 +1,1 @@
-{
-    "rewrites": [{ "source": "/(.*)", "destination": "/app/(tabs)/index.tsx" }]
-  }
+{ "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }] }
