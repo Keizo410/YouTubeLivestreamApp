@@ -100,6 +100,7 @@ export async function subscribeToYoutubers(youtuber: string) {
 
 export async function fetchChannelNum() {
   const res = await fetch(`${BACKEND_URL}/api/subscriptions/channels`);
+
   if (!res.ok) {
     throw new Error("Channel fetching error");
   }

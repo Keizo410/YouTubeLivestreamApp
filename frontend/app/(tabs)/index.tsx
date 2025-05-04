@@ -7,17 +7,24 @@ import {
   ActivityIndicator,
   Dimensions
 } from "react-native";
-import { Link, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { Link, router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { subscribeToYoutubers } from "@/app/api/api";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {useWindowDimensions} from 'react-native';
 
 export default function Index() {
-  const {height, width} = useWindowDimensions();
   const [text, onChangeText] = useState("");
   const [loading, setLoading] = useState(false);
+  const { width } = useWindowDimensions();
+  const [currentWidth, setCurrentWidth] = useState(width);
+
+  useFocusEffect(
+    useCallback(() => {
+      setCurrentWidth(Dimensions.get("window").width);
+    }, [])
+  );
 
   const handleSubscription = async (youtuber: string) => {
     setLoading(true);
