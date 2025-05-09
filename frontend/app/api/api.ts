@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_PROD_BACKEND_URL;
+const BACKEND_URL = process.env.EXPO_PUBLIC_LOCAL_BACKEND_URL;
 
 export async function fetchYoutubers() {
   const res = await fetch(`${BACKEND_URL}/api/subscriptions/youtubers`);
