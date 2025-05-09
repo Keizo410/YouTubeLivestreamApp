@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from multiprocessing import freeze_support
 from flask_cors import CORS
-import sys 
+import sys
 
 from routes.channels import channels_bp
 from routes.emails import emails_bp
@@ -18,7 +18,7 @@ load_dotenv()
 
 app = Flask(__name__, template_folder='templates')
 
-CORS(app)
+CORS(app, origins="https://keizo-youtube-livestream-frontend.expo.app")
 
 app.register_blueprint(channels_bp)
 app.register_blueprint(emails_bp)

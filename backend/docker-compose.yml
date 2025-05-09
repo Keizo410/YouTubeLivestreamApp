@@ -1,6 +1,6 @@
 services:
   flask-web:
-    image: keizo410/livestream-backend:latest
+    image: keizo410/backend-flask-web:latest
     ports:
       - "${FLASK_RUN_PORT}:8000"
     env_file:
@@ -9,8 +9,6 @@ services:
       - db
     networks:
       - app-network
-
-  
   db:
     image: postgres:13
     restart: always
