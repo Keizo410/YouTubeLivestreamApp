@@ -4,7 +4,6 @@ import os
 from multiprocessing import freeze_support
 from flask_cors import CORS
 import sys 
-
 from routes.channels import channels_bp
 from routes.emails import emails_bp
 from routes.livestreams import livestreams_bp
@@ -18,7 +17,11 @@ load_dotenv()
 
 app = Flask(__name__, template_folder='templates')
 
-CORS(app)
+if os.getenv("FLASK_ENV")=="production":
+    CORS(app, origins="https://keizo-youtube-livestream-frontend.expo.app")
+else:
+    CORS(app)
+
 
 app.register_blueprint(channels_bp)
 app.register_blueprint(emails_bp)
@@ -29,4 +32,7 @@ app.register_blueprint(youtube_bp)
 
 if __name__ == '__main__':
     freeze_support()
-    app.run(debug=True, host='0.0.0.0', port=int(os.getenv("FLASK_RUN_PORT", 8000)))
+    if os.getenv("FLASK_ENV")=="production":
+            app.run(debug=True, host='0.0.0.0', port=int(os.getenv("FLASK_RUN_PORT", 8000)))
+    else: 
+        app.run(debug=True, host='0.0.0.0', port=int(os.getenv("FLASK_RUN_PORT", 8000)))
