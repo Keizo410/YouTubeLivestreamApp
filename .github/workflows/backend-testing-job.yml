@@ -2,7 +2,7 @@ name: Running unit test suits in backend container.
 
 on: 
   push:
-    branches: [ master ]
+    branches: [ dev ]
     
 jobs: 
   automated-testing-job: 
