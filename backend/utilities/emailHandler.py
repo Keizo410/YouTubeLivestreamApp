@@ -71,7 +71,7 @@ class Email:
         self.msg['Subject'] = subject
         self.msg.attach(MIMEText(body, 'plain'))
         try:
-            with open(csv_file_path, 'rb') as file:
+            with open(csv_file_path, 'wb+') as file:
                 part = MIMEBase('application', 'octet-stream')
                 part.set_payload(file.read())
                 encoders.encode_base64(part)
