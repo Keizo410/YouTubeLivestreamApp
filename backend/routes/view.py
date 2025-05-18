@@ -13,16 +13,7 @@ def drop():
         return "Dropped"
     else:
         return "Error!"
-    
-# @views_bp.route('/view', methods=['GET'])
-# def view():
-#     db.set_sql_file('db/queries/view.sql')
-#     message, response = db.view_table(db.get_sql_file())
-#     if(response==200):
-#         return render_template('view.html', data=message[0], columns=message[1])
-#     else:
-#         return message, response
-    
+        
 @views_bp.route('/')
 def welcome():
     db.set_sql_file('db/queries/initialize.sql')
