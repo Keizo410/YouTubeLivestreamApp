@@ -8,6 +8,8 @@ export async function fetchYoutubers() {
 
   const data = await res.json();
 
+  console.log(res.status)
+
   return data.map((youtuber: { id: any; name: any }) => [
     youtuber.id,
     youtuber.name,
@@ -43,6 +45,7 @@ export async function fetchChannels() {
   }
 
   const data = await res.json();
+  console.log(res.status)
 
   return data.map((channel: { id: any; name: any; youtuber: any }) => [
     channel.id,
