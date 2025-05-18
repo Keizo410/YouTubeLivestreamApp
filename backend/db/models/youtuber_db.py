@@ -2,6 +2,9 @@ from ..base_db import BaseDB
 
 class YoutuberDB(BaseDB):
 
+    def __init__(self):
+        super().__init__()
+        
     def youtuberTableAdapter(self, queryResult):
         """
         Converts a list of tuples containing YouTuber relation data into a list of dictionaries.

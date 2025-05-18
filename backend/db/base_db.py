@@ -1,6 +1,7 @@
 import psycopg2
 import os
 import csv 
+import sys 
 
 class BaseDB():
     """Creates Database instance"""
@@ -225,6 +226,46 @@ class BaseDB():
         else:
             print(f"Error while writing data to CSV: {error}", file=sys.stderr)
             return None
+        
+    def create_subscription(self, channelID, channelName, channelHolderName):
+        """
+        Inserts a new subscription into the database.
+
+        Parameters:
+        channelID (str): The unique ID of the YouTube channel.
+        channelName (str): The name of the YouTube channel.
+        channelHolderName (list[str] | None): The name of the YouTuber (list with one string element).
+
+        Returns:
+        tuple[bool, str]: (True, "") if successful, (False, error message) if an error occurs.
+        """
+        try: 
+            conn = self.get_db_connection()
+            cur = conn.cursor()
+            youtuber_id=None
+
+            if not channelHolderName:
+                channelHolderName = ["Unknown"]  
+            else:
+                cur.execute("""INSERT INTO youtuber (name)
+                                VALUES (%s) ON CONFLICT (name) DO NOTHING
+                                RETURNING id
+                            """, (channelHolderName[0],))  
+                youtuber_id = cur.fetchone()  
+
+            if not youtuber_id:
+                cur.execute("SELECT id FROM youtuber WHERE name = %s", (channelHolderName[0],))
+                youtuber_id = cur.fetchone()[0]
+
+            cur.execute("""INSERT INTO channel (name, channelId, youtuber_id)
+                            VALUES (%s, %s, %s) ON CONFLICT (name) DO NOTHING
+                        """, (channelName, channelID, youtuber_id))  
+            conn.commit()
+            cur.close()
+            conn.close()
+            return True, ""
+        except (Exception, psycopg2.Error) as error:
+            return False, error 
         
     def drop_table(self, filepath):
         """

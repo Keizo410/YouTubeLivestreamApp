@@ -1,3 +1,4 @@
+from db.models.youtuber_db import YoutuberDB
 from flask import Blueprint, request, jsonify, abort
 import xml.etree.ElementTree as ET
 from multiprocessing import Process, Manager
@@ -9,7 +10,8 @@ youtube_bp = Blueprint('youtube', __name__)
 manager = Manager()
 vd = manager.Value(str, "")
 yt = YouTube()
-db = Database()
+# db = Database()
+db = YoutuberDB()
 websub = WebSub()
 
 #this function is for two purposes. The first one is to request/setup pubsub subscription to designated YT channel to wait for the update.

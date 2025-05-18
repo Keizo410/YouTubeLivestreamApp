@@ -1,7 +1,9 @@
 from ..base_db import BaseDB
 
 class ChannelDB(BaseDB):
-
+    def __init__(self):
+        super().__init__()
+        
     def channelTableAdapter(self, queryResult):
         """
         Converts a list of tuples containing channel relation data into a list of dictionaries.

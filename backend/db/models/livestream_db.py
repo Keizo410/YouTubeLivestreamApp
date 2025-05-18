@@ -5,6 +5,9 @@ import sys
 
 class LivestreamDB(BaseDB):
 
+    def __init__(self):
+        super().__init__()
+        
     def livestreamTableAdapter(self, queryResult):
         """
         Converts retrieved livestream relation data into a structured table format.

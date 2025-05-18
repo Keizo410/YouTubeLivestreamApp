@@ -1,8 +1,10 @@
+from db.models.channel_db import ChannelDB
 from flask import Blueprint, abort
 from utilities.database import Database
 
 channels_bp = Blueprint('channels', __name__)
-db = Database()
+# db = Database()
+db = ChannelDB()
 
 #return list of listeners of the channels
 @channels_bp.route('/api/channels/listeners', methods=['POST'])
