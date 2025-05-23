@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ master ]
+    branches: [ production ]
 
 jobs:
   deploy:
@@ -33,6 +33,7 @@ jobs:
             cd ~/YouTubeLivestreamApp/backend
             git pull origin production
             docker-compose down
+            docker-compose pull
             docker-compose up -d 
           EOF
           
