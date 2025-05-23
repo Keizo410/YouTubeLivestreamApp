@@ -5,26 +5,21 @@ import {
   TextInput,
   Button,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import { Link, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { subscribeToYoutubers } from "@/app/api/api";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import {useWindowDimensions} from 'react-native';
+import { useWindowDimensions } from "react-native";
 
 export default function Index() {
   const [text, onChangeText] = useState("");
   const [loading, setLoading] = useState(false);
   const { width } = useWindowDimensions();
-  const [currentWidth, setCurrentWidth] = useState(width);
 
-  useFocusEffect(
-    useCallback(() => {
-      setCurrentWidth(Dimensions.get("window").width);
-    }, [])
-  );
+  console.log(width);
 
   const handleSubscription = async (youtuber: string) => {
     setLoading(true);
@@ -49,19 +44,27 @@ export default function Index() {
 
   return (
     <LinearGradient
-            colors={["#5fa8d3", "#a0d8ef", "#ffffff"]} style={styles.container}>
-      <Text style={{...styles.text, fontSize: currentWidth*0.016}}>Welcome to YouTube LiveStream Tracker</Text>
+      colors={["#5fa8d3", "#a0d8ef", "#ffffff"]}
+      style={styles.container}
+    >
+      <Text style={{ ...styles.text, fontSize: Math.max(width * 0.016, 14) }}>
+        Welcome to YouTube LiveStream Tracker
+      </Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
           <TextInput
-            style={{...styles.input, fontSize: currentWidth*0.01}}
+            style={{ ...styles.input, fontSize: Math.max(width * 0.01, 14) }}
             onChangeText={onChangeText}
             value={text}
             placeholder="Paste your favorite YouTuber Handle (@...)"
           />
-          <Button color="#5fa8d3" title="Request" onPress={() => handleSubscription(text)} />
+          <Button
+            color="#5fa8d3"
+            title="Request"
+            onPress={() => handleSubscription(text)}
+          />
         </>
       )}
     </LinearGradient>
