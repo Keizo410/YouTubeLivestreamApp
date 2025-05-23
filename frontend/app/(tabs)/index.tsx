@@ -50,13 +50,13 @@ export default function Index() {
   return (
     <LinearGradient
             colors={["#5fa8d3", "#a0d8ef", "#ffffff"]} style={styles.container}>
-      <Text style={{...styles.text, fontSize: width*0.016}}>Welcome to YouTube LiveStream Tracker</Text>
+      <Text style={{...styles.text, fontSize: currentWidth*0.016}}>Welcome to YouTube LiveStream Tracker</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
           <TextInput
-            style={{...styles.input, fontSize: width*0.01}}
+            style={{...styles.input, fontSize: currentWidth*0.01}}
             onChangeText={onChangeText}
             value={text}
             placeholder="Paste your favorite YouTuber Handle (@...)"
