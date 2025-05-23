@@ -112,5 +112,5 @@ export default function Index() {
         )}
       </LinearGradient>
     </SafeAreaView>
-  );
+  ); 
 }
