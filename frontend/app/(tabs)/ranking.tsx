@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import {
   fetchChannels,
@@ -19,8 +20,6 @@ import TableComponent from "@/components/table";
 import ChartComponent from "../../components/chart";
 import BarComponent from "@/components/bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const { width, height } = Dimensions.get("window");
 
 export default function Ranking() {
   const [userView, setUserView] = useState("youtubers");
@@ -40,6 +39,73 @@ export default function Ranking() {
   const toggleChartViewButton = (newView: React.SetStateAction<string>) => {
     setLivestreamScreen(newView);
   };
+
+  const { width, height } = useWindowDimensions();
+
+  const styles = StyleSheet.create({
+    container: {
+      alignItems: "center",
+      display: "flex",
+      width: "100%",
+      height: "100%",
+      backgroundColor: "white",
+    },
+    buttonContainer: {
+      flex: 1,
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: "1%",
+    },
+    tableContainer: {
+      flex: 9,
+      width: "80%",
+      display: "flex",
+    },
+    head: {
+      height: 40,
+    },
+    headText: {
+      color: "black",
+      fontSize: width * 0.012,
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+    button: {
+      backgroundColor: "#5fa8d3",
+      width: width * 0.07,
+      height: height * 0.05,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    buttonText: {
+      color: "white",
+      fontSize: width * 0.01,
+      fontWeight: "bold",
+    },
+    selectedButton: {
+      backgroundColor: "#3b82a0",
+      width: width * 0.07,
+      height: height * 0.05,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    chartBarContainer: {
+      flex: 1,
+      flexDirection: "row",
+      display: "flex",
+      width: "100%",
+    },
+    chartBarChildContainer: {
+      flex: 9,
+    },
+    chartBarButtonContainer: {
+      flex: 1,
+      alignItems: "center",
+    },
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -215,68 +281,3 @@ export default function Ranking() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    display: "flex",
-    width: "100%",
-    height: "100%",
-    backgroundColor: "white",
-  },
-  buttonContainer: {
-    flex: 1,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: "1%",
-  },
-  tableContainer: {
-    flex: 9,
-    width: "80%",
-    display: "flex",
-  },
-  head: {
-    height: 40,
-  },
-  headText: {
-    color: "black",
-    fontSize: width * 0.012,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  button: {
-    backgroundColor: "#5fa8d3",
-    width: width * 0.07,
-    height: height * 0.05,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: width * 0.01,
-    fontWeight: "bold",
-  },
-  selectedButton: {
-    backgroundColor: "#3b82a0",
-    width: width * 0.07,
-    height: height * 0.05,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  chartBarContainer: {
-    flex: 1,
-    flexDirection: "row",
-    display: "flex",
-    width: "100%",
-  },
-  chartBarChildContainer: {
-    flex: 9,
-  },
-  chartBarButtonContainer: {
-    flex: 1,
-    alignItems: "center",
-  },
-});
