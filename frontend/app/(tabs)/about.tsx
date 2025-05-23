@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Dimensions, Image } from "react-native";
+import { Text, View, StyleSheet, Dimensions, Image, SafeAreaView } from "react-native";
 const { width } = Dimensions.get("window");
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ export default function AboutScreen() {
   }, [channelNum]);
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <LinearGradient
         colors={["#5fa8d3", "#a0d8ef", "#ffffff"]}
         style={styles.sectionContainer}
@@ -88,7 +88,7 @@ export default function AboutScreen() {
             </Text>
           </View>
       </LinearGradient>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -13,13 +13,15 @@ import { subscribeToYoutubers } from "@/app/api/api";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useWindowDimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const [text, onChangeText] = useState("");
   const [loading, setLoading] = useState(false);
-  const { width } = useWindowDimensions();
+  // const { width } = useWindowDimensions();
 
-  console.log(width);
+
+  console.log(window.innerWidth);
 
   const handleSubscription = async (youtuber: string) => {
     setLoading(true);
@@ -43,11 +45,12 @@ export default function Index() {
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <LinearGradient
       colors={["#5fa8d3", "#a0d8ef", "#ffffff"]}
-      style={styles.container}
+      style={styles.sectionContainer}
     >
-      <Text style={{ ...styles.text, fontSize: Math.max(width * 0.016, 14) }}>
+      <Text style={{ ...styles.text, fontSize: Math.max(window.innerWidth * 0.016, 14) }}>
         Welcome to YouTube LiveStream Tracker
       </Text>
       {loading ? (
@@ -55,7 +58,7 @@ export default function Index() {
       ) : (
         <>
           <TextInput
-            style={{ ...styles.input, fontSize: Math.max(width * 0.01, 14) }}
+            style={{ ...styles.input, fontSize: Math.max(window.innerWidth * 0.01, 14) }}
             onChangeText={onChangeText}
             value={text}
             placeholder="Paste your favorite YouTuber Handle (@...)"
@@ -68,16 +71,26 @@ export default function Index() {
         </>
       )}
     </LinearGradient>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
+    //entire page
     flex: 1,
-    // backgroundColor: "#25292e",
     backgroundColor: "white",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 20,
+  },
+  sectionContainer: {
+    //middle part
+    flex: 2,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
   },
   text: {
     color: "black",

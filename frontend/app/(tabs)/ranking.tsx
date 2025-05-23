@@ -139,7 +139,7 @@ export default function Ranking() {
   }, [livestreamScreen === "chart"]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={
@@ -212,7 +212,7 @@ export default function Ranking() {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
