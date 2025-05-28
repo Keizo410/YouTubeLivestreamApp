@@ -52,9 +52,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="ranking"
+        name="dashboard"
         options={{
-          title: "Ranking",
+          title: "Dashboard",
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome6 name="ranking-star" size={25} color={color} />
           ),

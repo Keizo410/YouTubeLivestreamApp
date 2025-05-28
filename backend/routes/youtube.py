@@ -29,7 +29,7 @@ def youtube_callback():
         if content_type == 'application/atom+xml':
             root = ET.fromstring(request.data)
             video_id, channel_id = yt.get_videoId(root)
-
+            print("...............Livestream is detected....................")
             if video_id is not None and yt.is_livestream(str(video_id)):
                 vd = manager.Value(str, video_id)  # Store video ID
                 ch_id = manager.Value(str, channel_id)  # Store channel ID

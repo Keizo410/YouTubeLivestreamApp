@@ -16,7 +16,6 @@ import {
   fetchLivestreamsChartSummary,
   fetchYoutubers,
 } from "@/app/api/api";
-import TableComponent from "@/components/table";
 import ChartComponent from "../../components/chart";
 import BarComponent from "@/components/bar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -237,45 +236,48 @@ export default function Ranking() {
           <ActivityIndicator size="large" color="#0000ff" />
         ) : error ? (
           <Text style={styles.headText}>{error}</Text>
-        ) : userView != "livestreams" ? (
+        // ) : userView != "livestreams" ? (
+        ): (
+            <ScrollView>
           <TableComponent data={data} />
-        ) : (
-          <View style={styles.chartBarContainer}>
-            <SafeAreaView style={styles.chartBarChildContainer}>
-              <ScrollView horizontal={true}>
-                {livestreamScreen === "chart" ? (
-                  <ChartComponent
-                    chartData={chartData}
-                    channelArray={channelArray}
-                  />
-                ) : (
-                  <BarComponent data={totalSalesBarData} />
-                )}
-              </ScrollView>
-            </SafeAreaView>
-            <View style={styles.chartBarButtonContainer}>
-              <TouchableOpacity
-                style={
-                  livestreamScreen === "chart"
-                    ? styles.selectedButton
-                    : styles.button
-                }
-                onPress={() => toggleChartViewButton("chart")}
-              >
-                <Text style={styles.buttonText}>Chart</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  livestreamScreen === "livestream"
-                    ? styles.selectedButton
-                    : styles.button
-                }
-                onPress={() => toggleChartViewButton("livestream")}
-              >
-                <Text style={styles.buttonText}>Bar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          </ScrollView>
+        // ) : (
+        //   <View style={styles.chartBarContainer}>
+        //     <SafeAreaView style={styles.chartBarChildContainer}>
+        //       <ScrollView horizontal={true}>
+        //         {livestreamScreen === "chart" ? (
+        //           <ChartComponent
+        //             chartData={chartData}
+        //             channelArray={channelArray}
+        //           />
+        //         ) : (
+        //           <BarComponent data={totalSalesBarData} />
+        //         )}
+        //       </ScrollView>
+        //     </SafeAreaView>
+        //     <View style={styles.chartBarButtonContainer}>
+        //       <TouchableOpacity
+        //         style={
+        //           livestreamScreen === "chart"
+        //             ? styles.selectedButton
+        //             : styles.button
+        //         }
+        //         onPress={() => toggleChartViewButton("chart")}
+        //       >
+        //         <Text style={styles.buttonText}>Chart</Text>
+        //       </TouchableOpacity>
+        //       <TouchableOpacity
+        //         style={
+        //           livestreamScreen === "livestream"
+        //             ? styles.selectedButton
+        //             : styles.button
+        //         }
+        //         onPress={() => toggleChartViewButton("livestream")}
+        //       >
+        //         <Text style={styles.buttonText}>Bar</Text>
+        //       </TouchableOpacity>
+        //     </View>
+        //   </View>
         )}
       </View>
     </SafeAreaView>

@@ -13,6 +13,7 @@ youtuberDB = YoutuberDB()
 yt = YouTube()
 websub = WebSub()
 
+#when subscription is successful, we want to check if the channel is on livestream
 @subscriptions_bp.route('/api/subscriptions', methods=['POST'])
 def subscribe():
     if not request.json or 'youtuber' not in request.json:
