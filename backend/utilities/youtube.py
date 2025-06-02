@@ -9,6 +9,34 @@ class YouTube:
         """Initilize a YouTube object"""
         pass
 
+    async def has_livestream(self, channel_id):
+        """
+        A method to check if a specific channel is on livestream.
+
+        Parameters:
+        channel_id - a string for YouTube channel id
+
+        Returns:
+        boolean - True or False
+        """
+        API_KEY = os.getenv('API_KEY')
+        YOUTUBE_API_URL = os.getenv('API_URL')
+        params = {
+            'channelId': channel_id,
+            'type': "video",
+            'eventType': "live",
+            'part': 'snippet, liveStreamingDetails',
+            'key': API_KEY
+        }
+        response = requests.get(YOUTUBE_API_URL, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            items=data.get('items')
+            if items:
+                video_id = items[0]['id']['videoId']
+                return True, video_id
+        return False, ""
+
     def is_livestream(self, video_id):
         """
         A method to check if a specific video_id is livestream video.

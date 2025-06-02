@@ -1,12 +1,16 @@
 import requests
-import os 
+import os
+
+from db.models.livestream_db import LivestreamDB
+from utilities.youtube import YouTube 
 
 class WebSub:
     def __init__(self):
         """
         Creates WebSub object.
         """
-        pass
+        self.yt = YouTube()
+        self.livestream_db = LivestreamDB()
 
     def get_grok_url(self):
         """
@@ -42,11 +46,14 @@ class WebSub:
         
         response = requests.post(hub_url, data=data)
         if response.status_code == 202:
+            status, video_id = self.yt.has_livestream(channelId)
+            if status:
+                "here we have to start tracking immediately"
+                # self.livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
             print('Subscribed successfully!')
             return 201
         else:
             print("Failed to subscribe: ", response.status_code, response.text)
             return response.status_code
-
 
     

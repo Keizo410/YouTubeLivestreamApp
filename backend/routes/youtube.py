@@ -1,3 +1,4 @@
+from db.models.livestream_db import LivestreamDB
 from db.models.youtuber_db import YoutuberDB
 from flask import Blueprint, request, jsonify, abort
 import xml.etree.ElementTree as ET
@@ -12,7 +13,9 @@ vd = manager.Value(str, "")
 yt = YouTube()
 # db = Database()
 db = YoutuberDB()
+livestream_db = LivestreamDB()
 websub = WebSub()
+
 
 #this function is for two purposes. The first one is to request/setup pubsub subscription to designated YT channel to wait for the update.
 #this is required to generate ngrok connection in websub folder. 
@@ -22,7 +25,10 @@ websub = WebSub()
 def youtube_callback():
     if request.method == "GET":
         hub = request.args.get("hub.challenge")
-        return hub if hub else abort(400)
+        if hub:
+            return hub
+        else:
+            abort(400)
 
     elif request.method == "POST":
         content_type = request.headers.get('Content-Type')
@@ -31,6 +37,8 @@ def youtube_callback():
             video_id, channel_id = yt.get_videoId(root)
             print("...............Livestream is detected....................")
             if video_id is not None and yt.is_livestream(str(video_id)):
+                livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
+
                 vd = manager.Value(str, video_id)  # Store video ID
                 ch_id = manager.Value(str, channel_id)  # Store channel ID
                 
@@ -39,8 +47,9 @@ def youtube_callback():
                 p.join(timeout=60 * 60)
                 if p.is_alive():
                     p.terminate()
-                # db.set_sql_file('db/queries/summary.sql')
-                # db.summerize_db_data(db.get_sql_file())
+                
+                livestream_db.update_livestrem_status(vdId=video_id, status="ended")
+
             return '', 204
         else:
             abort(415)
