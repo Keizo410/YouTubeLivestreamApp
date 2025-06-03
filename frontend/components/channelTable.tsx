@@ -65,6 +65,15 @@ export default function ChannelTableComponent({ data }: tableTypeProps) {
       </View>
       <View style={styles.onlineStatusColumn}>
         <Text style={styles.headText}>Status</Text>
+        {data.tableData.map((row: any[], index: number) => {
+          const status = row[2];
+          const color = status === "ongoing" ? "green" : "gray";
+          return (
+            <Text key={index} style={[styles.dataText, { color }]}>
+              {status}
+            </Text>
+          );
+        })}
       </View>
     </SafeAreaView>
   );

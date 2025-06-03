@@ -45,11 +45,12 @@ export async function fetchChannels() {
   }
 
   const data = await res.json();
-  console.log(res.status);
+  // console.log(res.status);
 
-  return data.map((channel: {name: any; youtuber: any }) => [
+  return data.map((channel: {name: any; youtuber: any, status: any }) => [
     channel.name,
     channel.youtuber,
+    channel.status
   ]);
 }
 

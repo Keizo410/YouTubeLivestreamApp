@@ -49,9 +49,6 @@ export default function ContributerTableComponent({ data }: tableTypeProps) {
         <Text style={styles.headText}>Names</Text>
         <Rows data={data.tableData} textStyle={styles.dataText} />
       </View>
-      <View style={styles.onlineStatusColumn}>
-        <Text style={styles.headText}>Status</Text>
-      </View>
     </SafeAreaView>
   );
 }

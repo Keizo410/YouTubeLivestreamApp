@@ -99,7 +99,7 @@ export default function Ranking() {
           tableHead = ["ID", "Name"];
         } else if (userView === "Channels") {
           tableData = await fetchChannels();
-          tableHead = ["ID", "Channel Name", "Youtuber"];
+          tableHead = ["ID", "Channel Name", "Youtuber", "Status"];
         } else if (userView === "Livestreams") {
           tableData = await fetchLivestreams();
           tableHead = [
