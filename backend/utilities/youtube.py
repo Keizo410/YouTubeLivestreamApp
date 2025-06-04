@@ -1,13 +1,19 @@
+from multiprocessing import Manager, Process
 import os
 import requests
+from ..db.models.livestream_db import LivestreamDB
 import nltk 
 from nameparser.parser import HumanName
 import numpy
 
+from backend.db.models import livestream_db
+
 class YouTube:
     def __init__(self):
         """Initilize a YouTube object"""
-        pass
+        self.livestream_db = LivestreamDB()
+        self.manager = Manager()
+        self.vd = self.manager.Value(str, "")
 
     async def has_livestream(self, channel_id):
         """
@@ -167,3 +173,19 @@ class YouTube:
 
         return id, title, persons, search_response.status_code
 
+    def mannually_trigger_livestream_tracking(self, channel_id: str, video_id: str):
+        print(f"Checking livestream: channel_id={channel_id}, video_id={video_id}")
+
+        self.livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
+
+        vd = self.manager.Value(str, video_id)  # Store video ID
+        ch_id = self.manager.Value(str, channel_id)  # Store channel ID
+        
+        p = Process(target=self.livestream_db.process_livechat, args=(vd, ch_id))
+        p.start()
+        p.join(timeout=60 * 60)
+        if p.is_alive():
+            p.terminate()
+        
+        self.livestream_db.update_livestream_status(vdId=video_id, status="ended")
+        print("Livestream tracking ended.")

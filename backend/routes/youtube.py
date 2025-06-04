@@ -42,18 +42,14 @@ def youtube_callback():
                 vd = manager.Value(str, video_id)  # Store video ID
                 ch_id = manager.Value(str, channel_id)  # Store channel ID
                 
-                p = Process(target=db.process_livechat, args=(vd, ch_id))
+                p = Process(target=livestream_db.process_livechat, args=(vd, ch_id))
                 p.start()
                 p.join(timeout=60 * 60)
                 if p.is_alive():
                     p.terminate()
                 
-                livestream_db.update_livestrem_status(vdId=video_id, status="ended")
+                livestream_db.update_livestream_status(vdId=video_id, status="ended")
 
             return '', 204
         else:
             abort(415)
-
-
-
-

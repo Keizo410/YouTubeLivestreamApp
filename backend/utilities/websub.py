@@ -49,7 +49,7 @@ class WebSub:
             status, video_id = self.yt.has_livestream(channelId)
             if status:
                 "here we have to start tracking immediately"
-                # self.livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
+                # self.yt.mannually_trigger_livestream_tracking(channel_id=channelId, video_id=video_id)
             print('Subscribed successfully!')
             return 201
         else:
