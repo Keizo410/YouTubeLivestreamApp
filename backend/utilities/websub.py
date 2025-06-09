@@ -1,6 +1,7 @@
 import requests
 import os
 
+from celery_tasks.tasks import track_livestream
 from db.models.livestream_db import LivestreamDB
 from utilities.youtube import YouTube 
 
@@ -49,7 +50,9 @@ class WebSub:
             status, video_id = self.yt.has_livestream(channelId)
             if status:
                 "here we have to start tracking immediately"
-                # self.yt.mannually_trigger_livestream_tracking(channel_id=channelId, video_id=video_id)
+                #######send message to rabbitmq for task#########
+                track_livestream.delay(video_id, channelId)
+                
             print('Subscribed successfully!')
             return 201
         else:

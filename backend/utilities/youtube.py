@@ -1,12 +1,10 @@
 from multiprocessing import Manager, Process
 import os
 import requests
-from ..db.models.livestream_db import LivestreamDB
+from db.models.livestream_db import LivestreamDB
 import nltk 
 from nameparser.parser import HumanName
 import numpy
-
-from backend.db.models import livestream_db
 
 class YouTube:
     def __init__(self):
@@ -15,7 +13,7 @@ class YouTube:
         self.manager = Manager()
         self.vd = self.manager.Value(str, "")
 
-    async def has_livestream(self, channel_id):
+    def has_livestream(self, channel_id):
         """
         A method to check if a specific channel is on livestream.
 
@@ -41,7 +39,7 @@ class YouTube:
             if items:
                 video_id = items[0]['id']['videoId']
                 return True, video_id
-        return False, ""
+        return False, "No Livestream is detected!"
 
     def is_livestream(self, video_id):
         """
@@ -173,19 +171,4 @@ class YouTube:
 
         return id, title, persons, search_response.status_code
 
-    def mannually_trigger_livestream_tracking(self, channel_id: str, video_id: str):
-        print(f"Checking livestream: channel_id={channel_id}, video_id={video_id}")
 
-        self.livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
-
-        vd = self.manager.Value(str, video_id)  # Store video ID
-        ch_id = self.manager.Value(str, channel_id)  # Store channel ID
-        
-        p = Process(target=self.livestream_db.process_livechat, args=(vd, ch_id))
-        p.start()
-        p.join(timeout=60 * 60)
-        if p.is_alive():
-            p.terminate()
-        
-        self.livestream_db.update_livestream_status(vdId=video_id, status="ended")
-        print("Livestream tracking ended.")

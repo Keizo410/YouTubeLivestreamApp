@@ -1,3 +1,4 @@
+from celery_tasks.tasks import track_livestream
 from db.models.livestream_db import LivestreamDB
 from db.models.youtuber_db import YoutuberDB
 from flask import Blueprint, request, jsonify, abort
@@ -37,19 +38,20 @@ def youtube_callback():
             video_id, channel_id = yt.get_videoId(root)
             print("...............Livestream is detected....................")
             if video_id is not None and yt.is_livestream(str(video_id)):
-                livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
+                #need to send rabbitmq to start task##################
+                # livestream_db.update_livestream_status(vdId=video_id, status="ongoing")
 
-                vd = manager.Value(str, video_id)  # Store video ID
-                ch_id = manager.Value(str, channel_id)  # Store channel ID
+                # vd = manager.Value(str, video_id)  # Store video ID
+                # ch_id = manager.Value(str, channel_id)  # Store channel ID
                 
-                p = Process(target=livestream_db.process_livechat, args=(vd, ch_id))
-                p.start()
-                p.join(timeout=60 * 60)
-                if p.is_alive():
-                    p.terminate()
-                
-                livestream_db.update_livestream_status(vdId=video_id, status="ended")
-
+                # p = Process(target=livestream_db.process_livechat, args=(vd, ch_id))
+                # p.start()
+                # p.join(timeout=60 * 60)
+                # if p.is_alive():
+                #     p.terminate()
+                # livestream_db.update_livestream_status(vdId=video_id, status="ended")
+                ######################################################
+                track_livestream.delay(video_id, channel_id)
             return '', 204
         else:
             abort(415)

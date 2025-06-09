@@ -28,6 +28,32 @@ services:
     networks:
       - app-network
       
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"  # RabbitMQ Management UI
+      - "5672:5672"    # AMQP port
+    networks:
+      - app-network
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: celery --app celery_tasks.tasks.celery worker --loglevel=info --logfile=celery_tasks/logs/celery.log
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=celery_tasks.config.DevelopmentConfig
+      - CELERY_BROKER_URL=amqp://guest@rabbitmq//
+    depends_on:
+      - flask-web
+      - rabbitmq
+    networks:
+      - app-network
 
 
 networks:
