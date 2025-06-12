@@ -126,8 +126,11 @@ class LivestreamDB(BaseDB):
             conn = self.get_db_connection()
             cur = conn.cursor()
             video_id=self.get_videoId()
-            livechat = pytchat.create(video_id)
-            channelName = self.get_channelId()
+
+            if video_id:
+                livechat = pytchat.create(video_id)
+                channelName = self.get_channelId()
+
             while livechat.is_alive():
                 try:
                     cur.execute("""select id from channel where name = %s""",(channelName,))
@@ -184,9 +187,9 @@ class LivestreamDB(BaseDB):
         Raises:
             None
         """
-        print("Tracking Started...")
-        self.set_videoId(str(vd.value))
-        self.set_channelId(str(ch.value))
+        print(f"Tracking Started...vd:{vd}, ch:{ch}", flush=True)
+        self.set_videoId(str(vd))
+        self.set_channelId(str(ch))
         success, error = self.exucture_livestream_query()
         if(success):
             print("Tracking Finished...", file=sys.stderr)
@@ -204,6 +207,7 @@ class LivestreamDB(BaseDB):
         Returns:
             boolean
         """
+        print(f"................livestream state for {vd_id} is changed to: {status}......................", flush=True)
         conn = self.get_db_connection()
         cursor = conn.cursor()
 
@@ -226,13 +230,12 @@ class LivestreamDB(BaseDB):
             conn.close()
             return False
         
-        # Upsert status
         cursor.execute("""
             INSERT INTO livestream_status (livestream_id, status_id)
             VALUES (%s, %s)
             ON CONFLICT (livestream_id) DO UPDATE
             SET status_id = EXCLUDED.status_id, updated_at = NOW()
-        """, (livestream_id, status))
+        """, (livestream_id, status_row))
         
         conn.commit()
         cursor.close()

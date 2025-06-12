@@ -79,15 +79,21 @@ class YouTube:
         videoId - A string for YouTube video id.
         channel_id - A string for YouTube channel id. 
         """
-        namespaces = {
-            'ns0': 'http://www.w3.org/2005/Atom',
-            'ns1': 'http://www.youtube.com/xml/schemas/2015'
-        }
-        for entry in root.findall('ns0:entry', namespaces):
-            videoId = entry.find('ns1:videoId', namespaces).text
-            channel_id = entry.find('ns0:author/ns0:name', namespaces).text  
-            
-        return videoId, channel_id
+        try:
+            namespaces = {
+                'ns0': 'http://www.w3.org/2005/Atom',
+                'ns1': 'http://www.youtube.com/xml/schemas/2015'
+            }
+            for entry in root.findall('ns0:entry', namespaces):
+                videoId = entry.find('ns1:videoId', namespaces).text
+                channel_id = entry.find('ns0:author/ns0:name', namespaces).text
+                return videoId, channel_id  
+
+        except Exception as e:
+            print(f"Error parsing video/channel ID: {e}")
+            return None
+
+        return None
 
     def get_channelHolderName(self, text):
         """

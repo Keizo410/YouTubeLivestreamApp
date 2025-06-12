@@ -38,7 +38,7 @@ class WebSub:
         hub_url = os.getenv('HUB_URL')
         topic_url = os.getenv('BASE_TOPIC_URL')+channelId
         # callback_url = self.get_grok_url() or os.getenv('CALLBACK_URL')
-        callback_url = os.getenv('CALLBACK_URL')
+        callback_url = os.getenv('CALLBACK_URL2')
         data = {
             'hub.mode': 'subscribe',
             'hub.topic': topic_url,
