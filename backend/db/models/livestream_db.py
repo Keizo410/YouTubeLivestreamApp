@@ -126,8 +126,11 @@ class LivestreamDB(BaseDB):
             conn = self.get_db_connection()
             cur = conn.cursor()
             video_id=self.get_videoId()
-            livechat = pytchat.create(video_id)
-            channelName = self.get_channelId()
+
+            if video_id:
+                livechat = pytchat.create(video_id)
+                channelName = self.get_channelId()
+
             while livechat.is_alive():
                 try:
                     cur.execute("""select id from channel where name = %s""",(channelName,))
@@ -151,9 +154,9 @@ class LivestreamDB(BaseDB):
                         listener_id = listener_data[0] if listener_data else 1  
 
                         cur.execute("""
-                            INSERT INTO livestream (channel_id, listener_id, donation, comment)
-                            VALUES (%s, %s, %s, %s) 
-                        """, (channel_id, listener_id, c.amountValue, c.message))
+                            INSERT INTO livestream (channel_id, listener_id, donation, comment, video_id)
+                            VALUES (%s, %s, %s, %s, %s) 
+                        """, (channel_id, listener_id, c.amountValue, c.message, video_id))
 
                     conn.commit()
                 except KeyboardInterrupt:
@@ -184,11 +187,58 @@ class LivestreamDB(BaseDB):
         Raises:
             None
         """
-        print("Tracking Started...")
-        self.set_videoId(str(vd.value))
-        self.set_channelId(str(ch.value))
+        print(f"Tracking Started...vd:{vd}, ch:{ch}", flush=True)
+        self.set_videoId(str(vd))
+        self.set_channelId(str(ch))
         success, error = self.exucture_livestream_query()
         if(success):
             print("Tracking Finished...", file=sys.stderr)
         else:
             print("SQL execusion during live streaming was unsuccessfull: ", {error})
+
+    def update_livestream_status(self, vd_id, status):
+        """
+        Updates livestream status with "ongoing" or "" for now
+
+        Args: 
+            vd_id: video id
+            status: ongoing or ended
+
+        Returns:
+            boolean
+        """
+        print(f"................livestream state for {vd_id} is changed to: {status}......................", flush=True)
+        conn = self.get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT id FROM livestream WHERE video_id = %s
+        """, (vd_id,))
+        livestream_row = cursor.fetchone()
+
+        if not livestream_row:
+            cursor.close()
+            conn.close()
+            return False
+
+        livestream_id = livestream_row[0]
+        cursor.execute("select id from status where status = %s", (status,))
+        status_row = cursor.fetchone()
+
+        if not status_row: 
+            cursor.close()
+            conn.close()
+            return False
+        
+        cursor.execute("""
+            INSERT INTO livestream_status (livestream_id, status_id)
+            VALUES (%s, %s)
+            ON CONFLICT (livestream_id) DO UPDATE
+            SET status_id = EXCLUDED.status_id, updated_at = NOW()
+        """, (livestream_id, status_row))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return True

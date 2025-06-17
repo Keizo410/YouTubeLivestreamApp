@@ -85,3 +85,19 @@ Add the reporting and alert systems
 Continuously refine models based on accumulated data
 
 This project would demonstrate advanced skills in data engineering, machine learning, real-time systems, UX design, and business intelligence - making it an impressive high-level portfolio piece that showcases both technical ability and business value creation.
+
+
+for dummy data of online livestream:
+ex 1: 
+
+ Insert for Channel with id = 1:
+-- Step 1: Insert livestream for channel 1
+INSERT INTO livestream (channel_id)
+VALUES (1)
+RETURNING id;
+Copy the returned id (e.g., 10), then:
+
+
+-- Step 2: Insert livestream status
+INSERT INTO livestream_status (livestream_id, status_id, updated_at)
+VALUES (10, 1, NOW());

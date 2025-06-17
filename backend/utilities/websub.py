@@ -1,12 +1,17 @@
 import requests
-import os 
+import os
+
+from celery_tasks.tasks import track_livestream
+from db.models.livestream_db import LivestreamDB
+from utilities.youtube import YouTube 
 
 class WebSub:
     def __init__(self):
         """
         Creates WebSub object.
         """
-        pass
+        self.yt = YouTube()
+        self.livestream_db = LivestreamDB()
 
     def get_grok_url(self):
         """
@@ -33,7 +38,7 @@ class WebSub:
         hub_url = os.getenv('HUB_URL')
         topic_url = os.getenv('BASE_TOPIC_URL')+channelId
         # callback_url = self.get_grok_url() or os.getenv('CALLBACK_URL')
-        callback_url = os.getenv('CALLBACK_URL')
+        callback_url = os.getenv('CALLBACK_URL2')
         data = {
             'hub.mode': 'subscribe',
             'hub.topic': topic_url,
@@ -42,11 +47,16 @@ class WebSub:
         
         response = requests.post(hub_url, data=data)
         if response.status_code == 202:
+            status, video_id = self.yt.has_livestream(channelId)
+            if status:
+                "here we have to start tracking immediately"
+                #######send message to rabbitmq for task#########
+                track_livestream.delay(video_id, channelId)
+                
             print('Subscribed successfully!')
             return 201
         else:
             print("Failed to subscribe: ", response.status_code, response.text)
             return response.status_code
-
 
     

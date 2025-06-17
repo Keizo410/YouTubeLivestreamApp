@@ -1,6 +1,7 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_PROD_BACKEND_URL;
+const BACKEND_URL = process.env.EXPO_PUBLIC_LOCAL_BACKEND_URL;
 
 export async function fetchYoutubers() {
+  console.log("here ",BACKEND_URL)
   const res = await fetch(`${BACKEND_URL}/api/subscriptions/youtubers`);
   if (!res.ok) {
     throw new Error("Youtuber fetching error");
@@ -10,8 +11,7 @@ export async function fetchYoutubers() {
 
   console.log(res.status);
 
-  return data.map((youtuber: { id: any; name: any }) => [
-    youtuber.id,
+  return data.map((youtuber: {name: any }) => [
     youtuber.name,
   ]);
 }
@@ -45,12 +45,12 @@ export async function fetchChannels() {
   }
 
   const data = await res.json();
-  console.log(res.status);
+  // console.log(res.status);
 
-  return data.map((channel: { id: any; name: any; youtuber: any }) => [
-    channel.id,
+  return data.map((channel: {name: any; youtuber: any, status: any }) => [
     channel.name,
     channel.youtuber,
+    channel.status
   ]);
 }
 
@@ -64,19 +64,13 @@ export async function fetchLivestreams() {
 
   return data.map(
     (livestreams: {
-      id: any;
       currentTime: any;
       date: any;
-      channel_id: any;
-      listener_id: any;
       donation: any;
       comment: any;
     }) => [
-      livestreams.id,
       livestreams.currentTime,
       livestreams.date,
-      livestreams.channel_id,
-      livestreams.listener_id,
       livestreams.donation,
       livestreams.comment,
     ]
@@ -111,4 +105,15 @@ export async function fetchChannelNum() {
   const data = await res.json();
 
   return data.length;
+}
+
+export async function fetchCurrentOnGoingLiveStream(){
+  const res = await fetch(`'${BACKEND_URL}/api/?'`)
+  
+  if (!res.ok){
+    throw new Error("Current on-going livestream info fetching error!")
+  }
+  const data = await res.json();
+
+  return data.map()
 }

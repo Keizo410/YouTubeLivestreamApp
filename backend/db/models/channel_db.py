@@ -21,16 +21,36 @@ class ChannelDB(BaseDB):
         """
         return [{"id": row[0], 
                  "name": row[1],
-                 "youtuber": row[2]} for row in queryResult]
+                 "youtuber": row[2],
+                 "status": row[3] if row[3] is not None else "offline"
+                 } for row in queryResult]
 
     def read_channel(self):
         """
-        Retrieves all channels along with the associated YouTuber's name.
+        Retrieves all channels along with the associated YouTuber's name and livestream status.
 
         Returns:
         tuple[bool, list[dict] | str]: (True, list of channels) if successful, (False, error message) if an error occurs.
         """
-        query = """SELECT channel.id, channel.name, youtuber.name 
-                FROM channel 
-                LEFT JOIN youtuber ON channel.youtuber_id = youtuber.id"""
+        query = """        
+            SELECT
+                c.id,
+                c.name,
+                y.name AS youtuber,
+                latest_status.status_name
+            FROM
+                channel c
+            LEFT JOIN youtuber y ON c.youtuber_id = y.id
+            LEFT JOIN (
+                SELECT
+                l.channel_id,
+                s.status AS status_name,
+                MAX(ls.updated_at) AS latest_update
+                FROM
+                livestream l
+                INNER JOIN livestream_status ls ON l.id = ls.livestream_id
+                INNER JOIN status s ON s.id = ls.status_id
+                GROUP BY l.channel_id, s.status
+            ) latest_status ON latest_status.channel_id = c.id
+            ORDER BY c.id"""
         return self.read_data(query, self.channelTableAdapter)

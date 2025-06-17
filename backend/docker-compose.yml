@@ -22,11 +22,41 @@ services:
       POSTGRES_USER: ${USER}
       POSTGRES_PASSWORD: ${PASSWORD}
     ports:
-      - "5432:5432"
+      - "${PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
+      
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "${RABBITMQ_UI_PORT}:15672"  # RabbitMQ Management UI
+      - "${AMQP_PORT}:5672"    # AMQP port
+    networks:
+      - app-network
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: celery --app celery_tasks.tasks.celery worker --loglevel=info --logfile=celery_tasks/logs/celery.log
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - .env 
+    environment:
+      - PYTHONPATH=/app
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=celery_tasks.config.DevelopmentConfig
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+    depends_on:
+      - flask-web
+      - rabbitmq
+    networks:
+      - app-network
+
 
 networks:
   app-network:
