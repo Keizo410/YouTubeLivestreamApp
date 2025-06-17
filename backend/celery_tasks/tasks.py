@@ -1,9 +1,14 @@
 from db.models.livestream_db import LivestreamDB
 from celery import Celery 
+from dotenv import load_dotenv
+import os 
+
+
+load_dotenv()
 
 celery = Celery(
     __name__, 
-    broker="amqp://guest@rabbitmq//",
+    broker=os.getenv('CELERY_BROKER_URL'),
 )
 
 livestream_db = LivestreamDB()
