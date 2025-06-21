@@ -12,6 +12,7 @@ import LivestreamView from "../dashboardViews/LiveStreamView";
 import { useWindowDimensions } from "react-native";
 import {
   fetchChannels,
+  fetchListeners,
   fetchLivestreams,
   fetchLivestreamsBarSummary,
   fetchLivestreamsChartSummary,
@@ -95,8 +96,8 @@ export default function Ranking() {
         let tableHead;
 
         if (userView === "Contributers") {
-          tableData = await fetchYoutubers();
-          tableHead = ["ID", "Name"];
+          tableData = await fetchListeners();
+          tableHead = ["Name", "Donation"];
         } else if (userView === "Channels") {
           tableData = await fetchChannels();
           tableHead = ["ID", "Channel Name", "Youtuber", "Status"];
