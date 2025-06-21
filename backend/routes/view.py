@@ -1,7 +1,6 @@
 from db.base_db import BaseDB
 from flask import Blueprint, jsonify, render_template
 import os
-from utilities.database import Database
 
 views_bp = Blueprint('views', __name__)
 # db = Database()
