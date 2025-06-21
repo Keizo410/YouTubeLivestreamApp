@@ -13,3 +13,9 @@ def welcome():
     db.set_sql_file('db/queries/initialize.sql')
     db.create_tables(db.get_sql_file())
     return jsonify({'message': 'Backend System is Established!'}), 200
+
+@views_bp.route('/init-db')
+def init_db():
+    return "ping", 200
+
+ 
