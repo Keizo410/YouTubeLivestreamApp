@@ -34,7 +34,7 @@ services:
   celery_worker:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     command: celery --app celery_tasks.tasks.celery worker --loglevel=info --logfile=celery_tasks/logs/celery.log
     volumes:
       - .:/app
