@@ -42,12 +42,12 @@ def create_app():
     register_blueprints(app)
     return app
 
+app = create_app()
+
 if __name__ == '__main__':
     #(Windows-specific issue)
     from multiprocessing import freeze_support
     freeze_support()
-
-    app = create_app()
 
     app_env = os.getenv("FLASK_ENV", "development")
     app_port = int(os.getenv("FLASK_RUN_PORT", 8000))
