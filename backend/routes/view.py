@@ -16,6 +16,7 @@ def welcome():
 
 @views_bp.route('/init-db')
 def init_db():
-    return "ping", 200
+    db.create_tables()
+    return "db initialized", 200
 
  

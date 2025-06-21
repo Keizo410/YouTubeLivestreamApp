@@ -92,7 +92,7 @@ class BaseDB():
             port=os.getenv("PORT")
         )
 
-    def create_tables(self, filepath):
+    def create_tables(self, filepath="queries/initialize.sql"):
         """
         Reads SQL queries from a file and executes them to create database tables.
 
