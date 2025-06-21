@@ -1,3 +1,5 @@
+from db.models.channel_db import ChannelDB
+from db.models.youtuber_db import YoutuberDB
 from flask import Blueprint, request, jsonify, abort
 from utilities.database import Database
 from utilities.youtube import YouTube
@@ -5,10 +7,13 @@ from utilities.websub import WebSub
 
 subscriptions_bp = Blueprint('subscriptions', __name__)
 
-db = Database()
+# db = Database()
+channelDB = ChannelDB()
+youtuberDB = YoutuberDB()
 yt = YouTube()
 websub = WebSub()
 
+#when subscription is successful, we want to check if the channel is on livestream
 @subscriptions_bp.route('/api/subscriptions', methods=['POST'])
 def subscribe():
     if not request.json or 'youtuber' not in request.json:
@@ -17,7 +22,7 @@ def subscribe():
     id, title, persons, status_code = yt.get_channelId(youtuber)
     status_code = websub.subscribe_to_channel(id)
     if status_code == 201:
-        success, _ = db.create_subscription(id, title, persons)
+        success, _ = channelDB.create_subscription(id, title, persons)
         message = f'id: {id} & title: {title} subscribed successfully'
         return jsonify({'message': message}), status_code if success else (jsonify({'message': message + ". But database operation failed."}), status_code)
     return abort(403)
@@ -28,10 +33,10 @@ def unsubscribe():
 
 @subscriptions_bp.route('/api/subscriptions/youtubers', methods=['GET'])
 def view_youtubers():
-    success, result = db.read_youtuber()
+    success, result = youtuberDB.read_youtuber()
     return (jsonify(result), 200) if success else abort(400)
 
 @subscriptions_bp.route('/api/subscriptions/channels', methods=['GET'])
 def view_channels():
-    success, result = db.read_channel()
+    success, result = channelDB.read_channel()
     return (jsonify(result), 200) if success else abort(400)

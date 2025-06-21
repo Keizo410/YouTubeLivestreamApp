@@ -1,10 +1,12 @@
+from db.base_db import BaseDB
 from flask import Blueprint
 import os
 from utilities.emailHandler import Email
 from utilities.database import Database
 
 emails_bp = Blueprint('emails', __name__)
-db = Database()
+# db = Database()
+db = BaseDB()
 
 @emails_bp.route('/send_email', methods=['GET'])
 def send_email():

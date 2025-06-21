@@ -1,13 +1,13 @@
-from flask import Blueprint, abort
-from utilities.database import Database
+from db.models.listener_db import ListenerDB
+from flask import Blueprint, abort,jsonify
 
 channels_bp = Blueprint('channels', __name__)
-db = Database()
+db = ListenerDB()
 
 #return list of listeners of the channels
-@channels_bp.route('/api/channels/listeners', methods=['POST'])
+@channels_bp.route('/api/channels/listeners', methods=['GET'])
 def view_channel_listners():
-    success, _ = db.read_channelListener()
+    success, result = db.read_listeners()
     if(success):
-        return "", 200
-    return abort(400)
+        return jsonify(result), 200
+    return jsonify({"error": "Failed to retrieve listeners"}), 400

@@ -1,5 +1,7 @@
+from multiprocessing import Manager, Process
 import os
 import requests
+from db.models.livestream_db import LivestreamDB
 import nltk 
 from nameparser.parser import HumanName
 import numpy
@@ -7,7 +9,37 @@ import numpy
 class YouTube:
     def __init__(self):
         """Initilize a YouTube object"""
-        pass
+        self.livestream_db = LivestreamDB()
+        self.manager = Manager()
+        self.vd = self.manager.Value(str, "")
+
+    def has_livestream(self, channel_id):
+        """
+        A method to check if a specific channel is on livestream.
+
+        Parameters:
+        channel_id - a string for YouTube channel id
+
+        Returns:
+        boolean - True or False
+        """
+        API_KEY = os.getenv('API_KEY')
+        YOUTUBE_API_URL = os.getenv('API_URL')
+        params = {
+            'channelId': channel_id,
+            'type': "video",
+            'eventType': "live",
+            'part': 'snippet, liveStreamingDetails',
+            'key': API_KEY
+        }
+        response = requests.get(YOUTUBE_API_URL, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            items=data.get('items')
+            if items:
+                video_id = items[0]['id']['videoId']
+                return True, video_id
+        return False, "No Livestream is detected!"
 
     def is_livestream(self, video_id):
         """
@@ -47,15 +79,21 @@ class YouTube:
         videoId - A string for YouTube video id.
         channel_id - A string for YouTube channel id. 
         """
-        namespaces = {
-            'ns0': 'http://www.w3.org/2005/Atom',
-            'ns1': 'http://www.youtube.com/xml/schemas/2015'
-        }
-        for entry in root.findall('ns0:entry', namespaces):
-            videoId = entry.find('ns1:videoId', namespaces).text
-            channel_id = entry.find('ns0:author/ns0:name', namespaces).text  
-            
-        return videoId, channel_id
+        try:
+            namespaces = {
+                'ns0': 'http://www.w3.org/2005/Atom',
+                'ns1': 'http://www.youtube.com/xml/schemas/2015'
+            }
+            for entry in root.findall('ns0:entry', namespaces):
+                videoId = entry.find('ns1:videoId', namespaces).text
+                channel_id = entry.find('ns0:author/ns0:name', namespaces).text
+                return videoId, channel_id  
+
+        except Exception as e:
+            print(f"Error parsing video/channel ID: {e}")
+            return None
+
+        return None
 
     def get_channelHolderName(self, text):
         """
@@ -138,4 +176,5 @@ class YouTube:
         persons = self.get_channelHolderName(f"""{search_results['items'][0]['snippet']['description']}""")
 
         return id, title, persons, search_response.status_code
+
 

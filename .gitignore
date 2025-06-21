@@ -44,7 +44,10 @@ app-example
 
 #Backend
 .env
+.env.local 
 *.csv
 
 __pycache__/
 .pytest_cache/
+
+  

@@ -26,8 +26,23 @@ CREATE TABLE IF NOT EXISTS livestream (
     listener_id INTEGER REFERENCES listener(id) on DELETE CASCADE,
     donation FLOAT,
     comment VARCHAR(1028),
+    video_id VARCHAR(255),
     constraint unique_livestream unique (currentTime, donation, comment)
 );
+
+create table if not exists status (
+    id serial primary key,
+    status varchar(50) not null unique
+);
+
+create table if not exists livestream_status (
+    id serial primary key,
+    livestream_id INTEGER REFERENCES livestream(id) on delete cascade unique,
+    status_id INTEGER REFERENCES status(id) on DELETE CASCADE,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO status (status) VALUES ('ongoing'), ('ended') ON CONFLICT DO NOTHING;
 
 INSERT INTO youtuber (name) VALUES ('Unknown') on CONFLICT (name) do nothing;
 INSERT INTO youtuber (name) VALUES ('StreamerA') ON CONFLICT (name) DO NOTHING;

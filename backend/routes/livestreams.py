@@ -1,9 +1,11 @@
 import json
+from db.models.livestream_db import LivestreamDB
 from flask import Blueprint, jsonify, abort
 from utilities.database import Database
 
 livestreams_bp = Blueprint('livestreams', __name__)
-db = Database()
+# db = Database()
+db = LivestreamDB()
 
 @livestreams_bp.route('/api/livestreams', methods=['GET'])
 def view_livestreams():

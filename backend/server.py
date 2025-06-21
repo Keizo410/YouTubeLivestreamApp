@@ -21,7 +21,7 @@ def configure_app(app):
 
 def configure_cors(app):
     """Setup CORS for the app."""
-    cors_origins = os.getenv("CORS_ORIGINS", "*") #add to .env
+    cors_origins = os.getenv("CORS_ORIGINS", "*") 
     if os.getenv("FLASK_ENV") == "production":
         CORS(app, origins=cors_origins)
     else:

@@ -1,6 +1,7 @@
 const BACKEND_URL = process.env.EXPO_PUBLIC_LOCAL_BACKEND_URL;
 
 export async function fetchYoutubers() {
+  console.log("here ", BACKEND_URL);
   const res = await fetch(`${BACKEND_URL}/api/subscriptions/youtubers`);
   if (!res.ok) {
     throw new Error("Youtuber fetching error");
@@ -8,13 +9,12 @@ export async function fetchYoutubers() {
 
   const data = await res.json();
 
-  return data.map((youtuber: { id: any; name: any }) => [
-    youtuber.id,
-    youtuber.name,
-  ]);
+  console.log(res.status);
+
+  return data.map((youtuber: { name: any }) => [youtuber.name]);
 }
 
-export async function fetchLivestreamsBarSummary(){
+export async function fetchLivestreamsBarSummary() {
   const res = await fetch(`${BACKEND_URL}/api/livestreams/summary/bar`);
   if (!res.ok) {
     throw new Error("livestream summary(bar) fetching error");
@@ -22,10 +22,10 @@ export async function fetchLivestreamsBarSummary(){
 
   const data = await res.json();
 
-  return data
+  return data;
 }
 
-export async function fetchLivestreamsChartSummary(){
+export async function fetchLivestreamsChartSummary() {
   const res = await fetch(`${BACKEND_URL}/api/livestreams/summary/chart`);
   if (!res.ok) {
     throw new Error("livestream summary(chart) fetching error");
@@ -33,7 +33,7 @@ export async function fetchLivestreamsChartSummary(){
 
   const data = await res.json();
 
-  return data
+  return data;
 }
 
 export async function fetchChannels() {
@@ -43,11 +43,12 @@ export async function fetchChannels() {
   }
 
   const data = await res.json();
+  // console.log(res.status);
 
-  return data.map((channel: { id: any; name: any; youtuber: any }) => [
-    channel.id,
+  return data.map((channel: { name: any; youtuber: any; status: any }) => [
     channel.name,
-    channel.youtuber
+    channel.youtuber,
+    channel.status,
   ]);
 }
 
@@ -61,19 +62,13 @@ export async function fetchLivestreams() {
 
   return data.map(
     (livestreams: {
-      id: any;
       currentTime: any;
       date: any;
-      channel_id: any;
-      listener_id: any;
       donation: any;
       comment: any;
     }) => [
-      livestreams.id,
       livestreams.currentTime,
       livestreams.date,
-      livestreams.channel_id,
-      livestreams.listener_id,
       livestreams.donation,
       livestreams.comment,
     ]
@@ -89,9 +84,9 @@ export async function subscribeToYoutubers(youtuber: string) {
     body: JSON.stringify({ youtuber: youtuber }),
   });
 
-  if(!(res).ok){
+  if (!res.ok) {
     throw new Error("Subscription error");
-  };
+  }
 
   const data = await res.json();
 
@@ -100,6 +95,7 @@ export async function subscribeToYoutubers(youtuber: string) {
 
 export async function fetchChannelNum() {
   const res = await fetch(`${BACKEND_URL}/api/subscriptions/channels`);
+
   if (!res.ok) {
     throw new Error("Channel fetching error");
   }
@@ -107,4 +103,32 @@ export async function fetchChannelNum() {
   const data = await res.json();
 
   return data.length;
+}
+
+export async function fetchCurrentOnGoingLiveStream() {
+  const res = await fetch(`${BACKEND_URL}/api/?`);
+
+  if (!res.ok) {
+    throw new Error("Current on-going livestream info fetching error!");
+  }
+  const data = await res.json();
+
+  return data.map();
+}
+
+export async function fetchListeners() {
+  const res = await fetch(`${BACKEND_URL}/api/channels/listeners`);
+
+  console.log(res);
+
+  if (!res.ok) {
+    throw new Error("Listener Fetching Error!");
+  }
+
+  const data = await res.json();
+
+  return data.map((listeners: { id: any; name: any; donation: any }) => [
+    listeners.name,
+    listeners.donation,
+  ]);
 }
