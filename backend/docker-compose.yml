@@ -22,7 +22,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
-  
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:
@@ -58,3 +58,5 @@ networks:
 
 volumes:
   pgdata:
+
+

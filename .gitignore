@@ -50,5 +50,4 @@ app-example
 __pycache__/
 .pytest_cache/
 
-docker-compose.yml
   
