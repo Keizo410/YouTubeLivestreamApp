@@ -93,11 +93,11 @@ class Database:
         Getter method for database connection.
         """
         return psycopg2.connect(
-            database=os.getenv("DATABASE"),
-            user=os.getenv("USER"),
-            password=os.getenv("PASSWORD"),
-            host=os.getenv("HOST"),
-            port=os.getenv("PORT")
+            database=os.getenv("POSTGRES_DATABASE"),
+            user=os.getenv("POSTGRES_USER"),
+            password=os.getenv("POSTGRES_PASSWORD"),
+            host=os.getenv("POSTGRES_HOST"),
+            port=os.getenv("POSTGRES_PORT")
         )
     
     def youtuberTableAdapter(self, queryResult):

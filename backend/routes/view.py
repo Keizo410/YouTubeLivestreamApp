@@ -7,17 +7,10 @@ views_bp = Blueprint('views', __name__)
 # db = Database()
 db = BaseDB()
 
-@views_bp.route('/drop', methods=['DELETE'])
-def drop():
-    db.set_sql_file('db/queries/drop.sql')
-    success, response = db.drop_table(db.get_sql_file())
-    if(response == 200):
-        return "Dropped"
-    else:
-        return "Error!"
-        
 @views_bp.route('/')
 def welcome():
+    if os.getenv('FLASK_ENV') != 'development':
+        return jsonify({'error': 'Forbidden'}), 403
     db.set_sql_file('db/queries/initialize.sql')
     db.create_tables(db.get_sql_file())
     return jsonify({'message': 'Backend System is Established!'}), 200
