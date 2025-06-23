@@ -93,26 +93,29 @@ class BaseDB():
         )
 
     def create_tables(self, filepath=None):
-        """
-        Reads SQL queries from a file and executes them to create database tables.
+    	"""
+    	Reads SQL queries from a file and executes them to create database tables.
 
-        Parameters:
-        filepath (str): The path to the file containing SQL queries.
+    	Parameters:
+    	filepath (str): The path to the file containing SQL queries.
 
-        Returns:
-        None: Prints success or error messages to stderr.
-        """
-	if filepath is None:
+    	Returns:
+    	None: Prints success or error messages to stderr.
+    	"""
+    	if filepath is None:
             filepath = os.path.join(os.path.dirname(__file__), 'queries', 'initialize.sql')
-            queries = self.get_queries(filepath=filepath)
-        if queries:
-            success, error = self.execute_multiple_query(query=queries)
-            if(success):
-                print("Database and tables created successfully!", file=sys.stderr)
+
+   	queries = self.get_queries(filepath=filepath)
+    
+    	if queries:
+       	    success, error = self.execute_multiple_query(query=queries)
+
+            if success:
+            	print("Database and tables created successfully!", file=sys.stderr)
             else:
-                print(f"Error while creating database: {error}", file=sys.stderr)
+            	print(f"Error while creating database: {error}", file=sys.stderr)
         else:
-            print("No queries found in the file.", file=sys.stderr)
+       	    print("No queries found in the file.", file=sys.stderr)
 
     def read_data(self, query, adapter_method):
         """
