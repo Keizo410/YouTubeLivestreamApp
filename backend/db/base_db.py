@@ -92,7 +92,7 @@ class BaseDB():
             port=os.getenv("PORT")
         )
 
-    def create_tables(self, filepath="queries/initialize.sql"):
+    def create_tables(self, filepath=None):
         """
         Reads SQL queries from a file and executes them to create database tables.
 
@@ -102,7 +102,9 @@ class BaseDB():
         Returns:
         None: Prints success or error messages to stderr.
         """
-        queries = self.get_queries(filepath=filepath)
+	if filepath is None:
+            filepath = os.path.join(os.path.dirname(__file__), 'queries', 'initialize.sql')
+            queries = self.get_queries(filepath=filepath)
         if queries:
             success, error = self.execute_multiple_query(query=queries)
             if(success):
