@@ -103,7 +103,7 @@ class BaseDB():
     	# None: Prints success or error messages to stderr.
     	# """
         if filepath is None: 
-            filepath = os.path.join(os.abort.dirname(__file__), 'queries', 'initialize.sql')
+            filepath = os.path.join(os.path.dirname(__file__), 'queries', 'initialize.sql')
         
         queries = self.get_queries(filepath=filepath)
 
