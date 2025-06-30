@@ -10,76 +10,97 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
 import { fetchChannelNum } from "@/app/api/api";
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 export default function AboutScreen() {
   const [channelNum, setChannelNum] = useState("+5");
   const { width } = useWindowDimensions();
 
   const styles = StyleSheet.create({
-  container: {
-    //entire page
-    flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: 20,
-  },
-  sectionContainer: {
-    //middle part
-    flex: 2,
-    width: "100%",
-    justifyContent: "space-around",
-    display: "flex",
-    flexDirection: "row",
-  },
-  sectionCardContainer: {
-    //each card sections
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: 150,
-  },
-  descriptionText: {
-    color: "black",
-    fontSize: width * 0.016,
-    fontWeight: "bold",
-    flex: 1,
-    alignContent: "center",
-    textAlign: "center",
-    width: width * 0.2,
-  },
-  semiDescriptionContainer: {
-    flex: 1,
-  },
-  semiDescriptionText: {
-    color: "black",
-    fontSize: width * 0.009,
-    fontWeight: "500",
-    textAlign: "center",
-    width: width * 0.2,
-  },
-  imageAndSubContainer: {
-    //channel number
-    fontSize: width * 0.05,
-    height: width*0.15,
-    width: "100%",
-    fontWeight: "bold",
-    textAlign: "center",
-    alignContent: "center"
-  },
-});
+    container: {
+      //entire page
+      flex: 1,
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingBottom: 20,
+    },
+    sectionContainer: {
+      //middle part
+      flex: 2,
+      width: "100%",
+      justifyContent: "space-around",
+      display: "flex",
+      flexDirection: "row",
+    },
+    sectionCardContainer: {
+      //each card sections
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      paddingTop: 150,
+    },
+    descriptionText: {
+      color: "black",
+      fontSize: width * 0.016,
+      fontWeight: "bold",
+      flex: 1,
+      alignContent: "center",
+      textAlign: "center",
+      width: width * 0.2,
+    },
+    semiDescriptionContainer: {
+      flex: 1,
+    },
+    semiDescriptionText: {
+      color: "black",
+      fontSize: width * 0.009,
+      fontWeight: "500",
+      textAlign: "center",
+      width: width * 0.2,
+    },
+    imageAndSubContainer: {
+      //channel number
+      fontSize: width * 0.05,
+      height: width * 0.15,
+      width: "100%",
+      fontWeight: "bold",
+      textAlign: "center",
+      alignContent: "center",
+    },
+  });
 
-  useEffect(() => {
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       let data = await fetchChannelNum();
+  //       setChannelNum(data);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [channelNum]);
+
+  useFocusEffect(
+  useCallback(() => {
     const fetchData = async () => {
       try {
-        let data = await fetchChannelNum();
+        const data = await fetchChannelNum();
         setChannelNum(data);
       } catch (err) {
         console.log(err);
       }
     };
+
     fetchData();
-  }, [channelNum]);
+
+    return () => {};
+  }, [])
+);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,7 +109,7 @@ export default function AboutScreen() {
         style={styles.sectionContainer}
       >
         <View style={styles.sectionCardContainer}>
-            <Text style={styles.imageAndSubContainer}>+{channelNum}</Text>
+          <Text style={styles.imageAndSubContainer}>+{channelNum}</Text>
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
@@ -157,5 +178,3 @@ export default function AboutScreen() {
     </SafeAreaView>
   );
 }
-
-
