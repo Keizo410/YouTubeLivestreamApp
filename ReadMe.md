@@ -1,20 +1,31 @@
-__TO RUN__
+# YouTube Livestream Tracking Service
 
->npm start
+> A scalable, production-ready service for real-time monitoring and analysis of YouTube livestream interactions.
 
-but, you need .env for [backend](./backend/README.md)
+## 📁 Documentation Overview
 
-# Youtube Livestreaming Tracking App
-Users can register their favorite YouTube channels, then this system automatically detects live-streaming sessions by the registered channels as well as tracks the donations and comments by individual contributors.
-The app can be used to collect live-streaming comment data, donations data by individuals, and channel total sales from each live-streaming session. 
+- [System Architecture](docs/ARCHITECTURE.md)
+- [API Documentation](docs/API_DOCUMENTATION.md)
+- [Development Setup](docs/DEVELOPMENT.md)
+- [Testing Strategy](docs/TESTING.md)
+- [Technical Decisions](docs/TECHNICAL_DECISIONS.md)
+- [Contributing Guidelines](CONTRIBUTING.md)
 
-## Backend logical flow
-![alt text](./flask_superchat.png)
+## 🚀 Quick Start
 
-## Frontend (Currently)
-### Home
-![Alt text](home.png)
-### About
-![Alt text](about.png)
-### Ranking
-![Alt text](ranking.png)
+> requires: .env for __frontend__/ and __backend__/
+
+
+```bash
+git clone https://github.com/Keizo410/YouTubeLivestreamApp.git
+# for backend 
+cd YouTubeLivestreamApp/backend
+docker-compose up -d
+# for frontend use web option 
+cd ../frontend
+npm install 
+npm start 
+``` 
+
+## Basic Usage Example
+
